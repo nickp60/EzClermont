@@ -11,6 +11,8 @@ from Bio.Seq import Seq
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
 
+# need this line for unittesting
+sys.path.append(os.path.join('..', 'clermontpcr'))
 
 class PcrHit(object):
     newid = itertools.count()
