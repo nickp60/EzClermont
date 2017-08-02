@@ -1,0 +1,31 @@
+language: python
+os:
+- linux
+dist: trusty
+sudo: required
+python:
+- '3.5'
+- '3.6'
+before install:
+- echo "$PATH"
+install:
+- pip install coveralls
+- pip install -r requirements.txt
+#- "./install_tools.sh"
+#- "./debug_travis.sh"
+script:
+- python setup.py install
+- nosetests --with-coverage --cover-package=clermontpcr tests/ -v
+after_success: coveralls
+deploy:
+  - provider: pypi
+    user: NickWaters
+    password:
+      secure: IL4Agc9xGOfMqZd7ANZcf+rZalfmt/fJHVuyRa6oKgcKPpLzfeqlPJvS4WLT5q8QBCDPc3Wk4dGj5yIDLUeJcM4P1W1TS2rZKxW5rlvwBsCl/B5bGwkfcjFQZEO0y+VaaQe13i/9LzmEAIamdCV4Q6EbVxLxzjOs1jpu2IO+WJzVOdCWX2cvhKxJp/09YoNdbB1Rxu4xw7QtgpYWKlrrJzsMhzuAwr2Tkvgu+L/kWETREZwubQ8VQeziV+G7TndATn79kVixdgS1s9p7T1uYWi1eVr8IHkxNV53+fIBE4cJgIcWaStJzM9vUkxSDziLMJky9J6g/ESp0Jnhftjc//CRJ2jd7W4lNzquS82/Pe3m6D4bd+b40cl+ve+7ElagcBvlpRXCUiUkznKtfvoq2PH/3zQClqAkm1nJ2wo4h2gPHdBB165D5cKvrpjez0P5vLFtgwik5zJJWsBaTxfmZsxCMUoE842fT2hmPTRHSdi2YKPoEGfFHci+taAvl9WLIiQrnb4/vlv9PkxmY+AvUgn4j8z/TpWXAcW5I6B9nQLJieUymU6sDaHshGX8V6hdRHj7WNr+OgVVko+Te7csh4OomrC+MvmE2ShnNdG1B1euhfjaJGTh/f+NjekhmyRmIYzv6OnHnT9eP0teDQcPbWnQXiTP8QEB3iQBrgJNKQK8=
+    on:
+      tags: true
+  - provider: pypi
+    user: NickWaters
+    server: https://test.pypi.org/legacy
+    password:
+      secure: W86X3z+cmQ5oOZlbiciuX1GvJalKmtR/AzCqOtblOvYyZpcxZ5hKywuki+mkLeOldIlKwNuhqqmY8m+6Z97RoZtme9XaPALdzJ5h8y7JgIttpEfZgYjvN+ZnEhoc9SGOM2f4LUHzNceKOmIpVsHvZ4psDIjAncP52l0VzVpqMQiXzadcbB9dX7Oe1WtGEwVI9CbeXHvANSrvg1blhRtN/plGLFyfZCVUJjqgrawhFg2c/BPnryO65Q0+1KSh+YZd1ar9Y7GyA5aH++9sKqRb+6B+pSBKQ9pelIEog3xKKfCqIlM8ZsF+sSItrDBM1n39jY2K+t1C6jnQU9bAr7Z5n0LmlPJY84QF524Qk4+5V/CiHuVEimZG+BPaoss10dlkvRhvWNonKdpnien/2P4kNWfP5yUniCBFut7vofQpVyrHXaHVNSB3zW2764h+q2JFwcSsUhZDfypZBrDZCCIR44oFfK5Af3CftF1Hr5FhBzjVdam1bsQhMiXacLV3yByjd7oVLRSelejFQltUgU1lQrWCRUht4WC+NtPdix3YuOnQf8qQ83E149emTwOcxe19pBZ+4KHhB1owujC0ZgQCbXIHDgQxyV0fGRpotR4yYBTPJdB4dIbhMMRRjIAeSqTz5GIhPJcPIfXoCaxt7aOq2E5ISrr9PacXSUMk891nI3s=
