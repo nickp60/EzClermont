@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/nickp60/clermontpcr.svg?branch=master)](https://travis-ci.org/nickp60/clermontpcr.svg?branch=master)[![Coverage Status](https://coveralls.io/repos/github/nickp60/clermontpcr/badge.svg?branch=master)](https://coveralls.io/github/nickp60/clermontpcr?branch=master)[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI version](https://badge.fury.io/py/clermontpcr.svg)](https://badge.fury.io/py/clermontpcr)
 
-![Icon](https://github.com/nickp60/clermontpcr/blob/master/icon/clermontPCR.svg)
+![Icon](https://github.com/nickp60/clermontpcr/blob/master/icon/clermontPCR-0.png)
 # Clermont PCR typing tool
 
 ## Description
