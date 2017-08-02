@@ -50,7 +50,7 @@ Have fun!
 
 
 ### Testing
-The tests can be run by either unittests or nosetests.  I dont have a vaidating C phylotype example, due to some [discrepancies](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0105395) noted in the literature
+The tests can be run by either unittests or nosetests.  I dont have a validating C phylotype example, due to some [discrepancies](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0105395) noted in the literature
 
 ### Requirements
 Biopython
