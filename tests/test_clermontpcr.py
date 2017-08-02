@@ -12,7 +12,7 @@ from Bio.SeqRecord import SeqRecord
 sys.path.append(os.path.join(
     os.path.dirname(os.path.dirname(__file__)), "clermontpcr"))
 
-import clermontpcr as clp
+import clermontpcr.clermontpcr as clp
 
 @unittest.skipIf((sys.version_info[0] != 3) or (sys.version_info[1] < 5),
                  "Subprocess.call among other things wont run if tried " +
