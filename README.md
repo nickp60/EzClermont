@@ -1,10 +1,14 @@
+[![Build Status](https://travis-ci.org/nickp60/clermontpcr.svg?branch=master)](https://travis-ci.org/nickp60/clermontpcr.svg?branch=master)
+![Icon](https://github.com/nickp60/clermontpcr/blob/master/icon/clermontpcr.svg)
 # Clermont PCR typing tool
 
 ## Description
 
 This is a crude tool for using the Clermont 2013 PCR typing method for *in silico* analysis of *E. coli* whole genomes or assembled contigs. This has no fancy bells, whistles, mismatch handling, fuzzy searches, or any of that nonsense.  This is the work of Sunday night and Monday morning, December 11-12 2016, and whatever modification need to be done to keep it chugging along.
 
-The concept is based on the SMS2 webtool for doing PCR product size prediction.
+I updated on August 2, 2017 to add reactions that differentiate A/C, D/E/cryptic, and to add more robust tests.
+
+The concept is loosely based on the SMS2 webtool for doing PCR product size prediction.
 
 There are (at this time) two command line options:
 
@@ -26,7 +30,7 @@ optional arguments:
 ```
 
 
-It prints out the presense or absence of the PCR product to stderr.  It doesnt check the length or anything fancy.  When using --partial, if a single primer has a hit but the contig starts/ends within the length of the expected product size, we call it a hit.
+It prints out the presense or absence of the PCR product to stderr, and the resulting phylotype to stdout.  It checks the length, accepting fragments that are within 20bp of the expected size.  When using --partial, if a single primer has a hit but the contig starts/ends within the length of the expected product size, we call it a hit.
 
 A minimal "filename.fasta    ClermontType" output can be piped to a results file using a shell loop:
 
@@ -44,7 +48,7 @@ Have fun!
 
 
 ### Testing
-The script also contains two really basic tests that can be run by either unittests or nosetests.
+The tests can be run by either unittests or nosetests.  I dont have a vaidating C phylotype example, due to some [discrepancies](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0105395) noted in the literature
 
 ### Requirements
 Biopython
