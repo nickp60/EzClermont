@@ -9,9 +9,6 @@ import unittest
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
-sys.path.append(os.path.join(
-    os.path.dirname(os.path.dirname(__file__)), "clermontpcr"))
-
 import clermontpcr.clermontpcr as clp
 
 @unittest.skipIf((sys.version_info[0] != 3) or (sys.version_info[1] < 5),
@@ -107,12 +104,13 @@ class clermontTestCase(unittest.TestCase):
         E1_ref = ["E", "BA000007.2"]
         E2_ref = ["E", "AE005174.2"]
         D_ref = ["D", "NC_011751.1"]
+        C_ref = ["C", "CP004009.1"]
         F1_ref = ["F", "NC_011750.1"]
         F2_ref = ["F", "LYBO00000000.1"]
         B2_ref = ["B2", "CU651637.1"]
         Ferg_ref = ["U", "NC_011740.1"]
 
-        for ref in [A_ref, B1_ref, E1_ref, E2_ref, D_ref, F1_ref,
+        for ref in [A_ref, B1_ref, C_ref, E1_ref, E2_ref, D_ref, F1_ref,
                     F2_ref, B2_ref, Ferg_ref]:
             args = argparse.Namespace(
                 contigs=os.path.join(os.path.dirname(__file__),
