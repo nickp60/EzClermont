@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block body %}
+<form action="" method="POST" enctype="multipart/form-data">
+  Project file path: <input type="file" name="myfile"><br>
+  <input type="submit" name="submit" value="Upload File" >
+  {{ header}}
+  <br>----------------------------------
+  <pre>{{ content }}</pre>
+  <pre>{{ nlines }}</pre>
+  ----------------------------------<br>
+  <input type="submit" name="submit" value="Run">
+  <pre>{{ results }}</pre>
+
+  {% endblock %}
