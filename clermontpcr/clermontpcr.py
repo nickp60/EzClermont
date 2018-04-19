@@ -472,7 +472,7 @@ def main(args):
             os.path.splitext(os.path.basename(args.contigs))[0],
             Clermont_type
         ))
-    return(Clermont_type)
+    return(Clermont_type, profile)
 
 
 if __name__ == "__main__":

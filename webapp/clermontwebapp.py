@@ -10,6 +10,8 @@ sys.path.append(os.path.join('..', 'clermontpcr'))
 import clermontpcr
 
 app = Flask(__name__)
+app.secret_key = 'crytographyisnotmystrongsuit'
+
 #  set the max file size to 20mb.  If an ecoli fasta is
 #    larger than this, then its probably not an e coli
 app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
@@ -32,6 +34,8 @@ def get_tmpfile_path():
 
 @app.route("/", methods=['GET','POST'])
 def index():
+    session["FINISHED"] = False
+    session["LOADED"] = False
     file_content = [""]
     # return render_template("template.html", content=content) #
     if request.method == 'POST':
@@ -47,24 +51,28 @@ def index():
             file.save(tmpfile)
             with open(tmpfile) as f:
                 file_content = f.read().split("\n")
-            teaser = "\n".join(file_content[0:10])
-            addn_lines = len(file_content) - 10
+            teaser = "\n".join(file_content[0:7])
+            addn_lines = len(file_content) - 7
             if addn_lines < 0:
                 addn_lines = 0
             header = "Here is the first bit of your file:"
-
+            session["LOADED"] = True
             return render_template(
                 'alt.html',
                 header=header,
                 content=teaser,
                 nlines="...and %d more lines" % addn_lines
             )
-        elif request.form['submit'] == "Run" :
+        elif request.form['submit'] == "Get Clermont Phylotype" :
             tmpfile = get_tmpfile_path()
             print(tmpfile)
             if os.path.isfile(tmpfile):
                 print(tmpfile)
-                return runcler(contigsfile=tmpfile)
+                return runcler(
+                    contigsfile=tmpfile,
+                    ignore_control=request.form.get('allowcontrolfails'),
+                    partial=request.form.get('allowpartial')
+                )
             else:
                 raise ValueError("clicky clicky clicky;  select a file first")
         else:
@@ -76,11 +84,19 @@ def runcler(contigsfile, ignore_control=False, partial=False):
     # prepare args
     args = Namespace(contigs=contigsfile,
                      ignore_control=ignore_control, partial=partial)
-    results = clermontpcr.main(args)
+    try:
+        results, profile  = clermontpcr.main(args)
+    except Exception as e:
+        print(e)
+        results = str("Control fail!  Are you sure this is E. coli? " +
+                      "Please contact the support team")
+        profile = ""
+    session["FINISHED"] = True
     return render_template(
         "alt.html",
+        profile=profile,
         results=results)
 
 if __name__ == "__main__":
-    session['tmpdir'] = tempfile.mkdtemp("clerpcr_tmps")
+    # session['tmpdir'] = tempfile.mkdtemp("clerpcr_tmps")
     app.run(debug=True, port=5957)
