@@ -22,8 +22,8 @@ class clermontTestCase(unittest.TestCase):
     """
     def test_interpret(self):
 
-        ref = ['A', 'A/C', 'B1', 'A/C', 'E/D', 'E/D', 'E/cryptic', 'E/D',
-               'E/D', 'F', 'B2', 'B2', 'B2', 'cryptic', 'E/cryptic', 'U']
+        ref = ['A', 'A/C', 'B1', 'A/C', 'D/E', 'D/E', 'E/cryptic', 'D/E',
+               'D/E', 'F', 'B2', 'B2', 'B2', 'cryptic', 'E/cryptic', 'U']
         test = []
         # if True:
         # A's

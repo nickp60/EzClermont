@@ -14,6 +14,7 @@ from Bio.SeqRecord import SeqRecord
 # need this line for unittesting
 sys.path.append(os.path.join('..', 'clermontpcr'))
 
+
 class PcrHit(object):
     newid = itertools.count()
 
@@ -224,15 +225,15 @@ def get_matches(allele, seq_list, fwd_primer, rev_primer, expected_size,
     return(matches)
 
 
-def interpret_hits(arpA, chu, TspE4, yjaA):
+def old_interpret_hits(arpA, chu, TspE4, yjaA):
     if arpA:
         if chu:
             if TspE4 and yjaA:
                 result = "U"
             elif not TspE4 and not yjaA:
-                result = "E/D"
+                result = "D/E"
             elif TspE4:
-                result = "E/D"
+                result = "D/E"
             else:
                 assert yjaA, "error interpretting results!"
                 result = "E/cryptic"
@@ -260,8 +261,42 @@ def interpret_hits(arpA, chu, TspE4, yjaA):
     return(result)
 
 
-def refine_hits(hit, c_primers, e_primers, allow_partial, seqs):
-    if hit == "E/D":
+def interpret_hits(arpA, chu, yjaA, TspE4):
+    # {result: [[arpA,chuA, yjaA, TspE4.C2],
+    #           [arpA,chuA, yjaA, TspE4.C2]], etc},
+    # also, screw pep8 spacing, I need this to look pretty
+    clermont_key = \
+        {
+            "A":         [[1, 0, 0, 0]],
+            "B1":        [[1, 0, 0, 1]],
+            "F":         [[0, 1, 0, 0]],
+            "B2":        [[0, 1, 1, 0],
+                          [0, 1, 1, 1],
+                          [0, 1, 0, 1]],
+            "A/C":       [[1, 0, 1, 0]],
+            "D/E":       [[1, 1, 0, 0],
+                          [1, 1, 0, 1]],
+            "E/cryptic": [[1, 1, 1, 0]],
+            "cryptic":   [[0, 0, 1, 0]],
+            # add this in when we learn the frag sequence, see note below
+            # "U/cryptic": [[0, 0, 0, 0]]
+            "U":         [[0, 0, 0, 0],
+                          [0, 0, 0, 1],
+                          [0, 0, 1, 1],
+                          [1, 0, 1, 1],
+                          [1, 1, 1, 1]]
+        }
+    isolate_profile = [arpA, chu, yjaA, TspE4]
+    for key, value in clermont_key.items():
+        for profile in value:
+            if profile == isolate_profile:
+                return key
+    raise ValueError("results profile could not be interpretted! Exiting")
+
+
+def refine_hits(hit, c_primers, e_primers, cryptic_chu_primers,
+                allow_partial, seqs):
+    if hit == "D/E":
         e_primers["arpA_e"], report_string = run_primer_pair(
             seqs=seqs, allele="arpA_e",
             vals=e_primers["arpA_e"],
@@ -288,6 +323,25 @@ def refine_hits(hit, c_primers, e_primers, allow_partial, seqs):
             return "C"
         else:
             return "A"
+    # this is to resolve instances where a large, 476bp chuA fragment can
+    # differentiate between cryptic clades and the unknown.
+    # "Instead yield a PCR product that is 476 bp in size (Fig. 1).
+    # This product is a fragment of the chuA gene that is a consequence of
+    # an 11 bp match between the primer AceK.f and the chuA gene and the
+    # presence of the chuA.2 primer. This has been confirmed by sequencing of
+    # the PCR product (data not shown)."
+
+    # Note that currently this isn't called, as I haven't figured out what
+    # fragment should be made
+    elif hit == "U/cryptic":
+        cryptic_chu_primers["476_chu"], report_string = run_primer_pair(
+            seqs=seqs, allele="476_chu",
+            vals=cryptic_chu_primers["476_chu"],
+            allow_partial=allow_partial)
+        if cryptic_chu_primers["476_chu"][3]:
+            return "cryptic"
+        else:
+            return "U"
     else:
         return hit
 
@@ -350,7 +404,7 @@ def main(args):
     trpAgpC_2 = "TCTGCGCCGGTCACGCCC"
     # trpA, for control
     trpBA_f = "CGGCGATAAAGACATCTTCAC"
-    trpBA_r = "GCAACGCGGCCTGGCGGAAG"
+    trpBA_r = "GCAACGCGGCCTGGCGGAA[GA]"
 
     quad_primers = {"chu": [chuA_1b, chuA_2, 288],
                     "yjaA": [yjaA_1b, yjaA_2b, 211],
@@ -358,9 +412,11 @@ def main(args):
                     "arpA": [AceK_f, ArpA1_r, 400]}
     c_primers = {"trpA_c": [trpAgpC_1, trpAgpC_2, 219]}
     e_primers = {"arpA_e": [ArpAgpE_f, ArpAgpE_r, 301]}
+    cryptic_chu_primers = {"476_chu": [AceK_f, chuA_2, 476]}
 
     controls = {"trpBA_control": [trpBA_f, trpBA_r, 489]}
-    sys.stderr.write("Reading in sequence(s)\n")
+    sys.stderr.write("Reading in sequence(s) from %s\n" %
+                     os.path.basename(args.contigs))
     with open(args.contigs, 'r') as fasta:
         seqs = list(SeqIO.parse(fasta, 'fasta'))
 
@@ -405,6 +461,7 @@ def main(args):
     Clermont_type = refine_hits(hit=Clermont_type,
                                 c_primers=c_primers,
                                 e_primers=e_primers,
+                                cryptic_chu_primers=cryptic_chu_primers,
                                 allow_partial=args.partial,
                                 seqs=seqs)
     sys.stderr.write("Clermont type: %s\n" % Clermont_type)
@@ -416,121 +473,6 @@ def main(args):
             Clermont_type
         ))
     return(Clermont_type)
-
-
-class clermontTestCase(unittest.TestCase):
-    """
-    """
-    def test_interpret(self):
-
-        ref = ['A', 'A/C', 'B1', 'A/C', 'E/D', 'E/D', 'E/cryptic', 'E/D',
-               'E/D', 'F', 'B2', 'B2', 'B2', 'cryptic', 'E/cryptic', 'U']
-        test = []
-        # if True:
-        # A's
-        test.append(
-            interpret_hits(arpA=True, chu=False, yjaA=False, TspE4=False))
-        test.append(
-            interpret_hits(arpA=True, chu=False, yjaA=True, TspE4=False))
-        # B1
-        test.append(
-            interpret_hits(arpA=True, chu=False, yjaA=False, TspE4=True))
-        # C
-        test.append(
-            interpret_hits(arpA=True, chu=False, yjaA=True, TspE4=False))
-        # E
-        test.append(
-            interpret_hits(arpA=True, chu=True, yjaA=False, TspE4=False))
-        test.append(
-            interpret_hits(arpA=True, chu=True, yjaA=False, TspE4=True))
-        test.append(
-            interpret_hits(arpA=True, chu=True, yjaA=True, TspE4=False))
-        # D
-        test.append(
-            interpret_hits(arpA=True, chu=True, yjaA=False, TspE4=False))
-        test.append(
-            interpret_hits(arpA=True, chu=True, yjaA=False, TspE4=True))
-        # F
-        test.append(
-            interpret_hits(arpA=False, chu=True, yjaA=False, TspE4=False))
-        # B2
-        test.append(
-            interpret_hits(arpA=False, chu=True, yjaA=True, TspE4=False))
-        test.append(
-            interpret_hits(arpA=False, chu=True, yjaA=False, TspE4=True))
-        test.append(
-            interpret_hits(arpA=False, chu=True, yjaA=True, TspE4=True))
-        # cryptic
-        test.append(
-            interpret_hits(arpA=False, chu=False, yjaA=True, TspE4=False))
-        test.append(
-            interpret_hits(arpA=True, chu=True, yjaA=True, TspE4=False))
-        # unknown
-        test.append(
-            interpret_hits(arpA=False, chu=False, yjaA=False, TspE4=False))
-        print(ref)
-        print(test)
-        self.assertEqual(ref, test)
-
-    def test_get_matches(self):
-        test_seq = [SeqRecord(
-            Seq("GCACAGTCGATCAAAATTTTTGCAGTCGACTGGACTGACTGTCGGATCTCAGTCAT"))]
-        test_fwd = "GCACAG"
-        fwd = re.compile(test_fwd, re.IGNORECASE)
-        test_rev = "TGACTG"
-        self.assertEqual(fwd.search(str(test_seq[0].seq)).span(), (0, 6))
-        forward_control_matches = get_matches(
-            allele="test",
-            seq_list=test_seq,
-            fwd_primer=test_fwd,
-            rev_primer=test_rev,
-            allow_partial=True,
-            expected_size=60,
-            strand='+')
-        self.assertEqual(forward_control_matches[0].R_end, 55)
-
-    def test_refine_hits(self):
-        pass
-
-    def test_ambig_rc(self):
-        res1 = ambig_rc("[AT]ATCACTACTACTA[CA]TC", verbose=True)
-        self.assertEqual(res1, "GA[TG]TAGTAGTAGTGAT[AT]")
-        res2 = ambig_rc("[AT]ATCACTAC[TACT]A[CA]TC", verbose=True)
-        self.assertEqual(res2, "GA[TG]T[AGTA]GTAGTGAT[AT]")
-        res3 = ambig_rc("[AT]ATCACTAC[TACT]A[CA][TC]", verbose=True)
-        self.assertEqual(res3, "[GA][TG]T[AGTA]GTAGTGAT[AT]")
-
-    def test_integration(self):
-        A_ref = ["A", "NC_010468.1"]
-        B1_ref = ["B1", "NC_011741.1"]
-        E1_ref = ["E", "BA000007.2"]
-        E2_ref = ["E", "AE005174.2"]
-        D_ref = ["D", "NC_011751.1"]
-        F1_ref = ["F", "NC_011750.1"]
-        F2_ref = ["F", "LYBO00000000.1"]
-        B2_ref = ["B2", "CU651637.1"]
-        Ferg_ref = ["U", "NC_011740.1"]
-
-        for ref in [A_ref, B1_ref, E1_ref, E2_ref, D_ref, F1_ref,
-                    F2_ref, B2_ref, Ferg_ref]:
-            args = argparse.Namespace(
-                contigs=os.path.join(os.path.dirname(__file__),
-                                     "refs", ref[1] + ".fasta"),
-                partial=False,
-                ignore_control=False)
-            result = main(args)
-            self.assertEqual(
-                ref[0], result)
-
-    def test_integration_noncoli(self):
-        Crypt_ref = ["Cryptic", "AEMF01000001"]
-        args = argparse.Namespace(
-            contigs=os.path.join(os.path.dirname(__file__),
-                                 "refs", Crypt_ref[1] + ".fasta"),
-            partial=False,
-            ignore_control=False)
-        with self.assertRaises(SystemExit):
-            result = main(args)
 
 
 if __name__ == "__main__":
