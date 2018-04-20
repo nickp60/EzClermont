@@ -5,8 +5,7 @@ from werkzeug import secure_filename
 import tempfile
 from argparse import Namespace
 
-# strange way to do the imports, but hey
-from clermontpcr import clermontpcr
+from cpcr import run as clermontpcr
 # check that the import works
 print(clermontpcr.PcrHit)
 
@@ -66,7 +65,8 @@ def index():
                     partial=request.form.get('allowpartial')
                 )
             else:
-                raise ValueError("clicky clicky clicky;  select a file first")
+                results = "unable to read file"
+                profile = ""
             ###
             return render_template(
                 'alt.html',
@@ -88,7 +88,7 @@ def runcler(contigsfile, ignore_control=False, partial=False):
     try:
         results, profile  = clermontpcr.main(args)
     except Exception as e:
-        if e is AttributeError:
+        if e is ImportError:
             results = "Deploy error!"
         else:
             print(e)

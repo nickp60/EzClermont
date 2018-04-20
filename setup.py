@@ -1,10 +1,5 @@
 """
 Setup for clermontpcr
-
-A setuptools based setup module.
-See:
-https://packaging.python.org/en/latest/distributing.html
-https://github.com/pypa/sampleproject
 """
 
 # Always prefer setuptools over distutils
@@ -22,7 +17,7 @@ except ImportError: # for pip <= 9.0.3
 
 here = path.abspath(path.dirname(__file__))
 
-VERSIONFILE = "clermontpcr/_version.py"
+VERSIONFILE = "cpcr/_version.py"
 verstrline = open(VERSIONFILE, "rt").read()
 VSRE = r"^__version__ = ['\"]([^'\"]*)['\"]"
 mo = re.search(VSRE, verstrline, re.M)
@@ -67,17 +62,14 @@ setup(
     ],
     keywords='bioinformatics evolution genomics development',
     packages=find_packages(),
-    install_requires=[
-        'Biopython==1.68'
-    ],
     include_package_data=True,
     package_data={
        '': [path.join(__name__, "tests", "refs/*")],
     },
     entry_points={
        'console_scripts': [
-           'clermontpcr.py=clermontpcr.clermontpcr:main',
-       ],
+           'clermontpcr=cpcr.run:main',
+       ],                  
     },
 #    scripts=['clermontpcr/clermontpcr.py'],
 )

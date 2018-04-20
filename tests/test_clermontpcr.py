@@ -9,7 +9,7 @@ import unittest
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
-import clermontpcr.clermontpcr as clp
+import clermontpcr.run as clp
 
 @unittest.skipIf((sys.version_info[0] != 3) or (sys.version_info[1] < 5),
                  "Subprocess.call among other things wont run if tried " +

@@ -11,10 +11,6 @@ from Bio.Seq import Seq
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
 
-# need this line for unittesting
-sys.path.append(os.path.join('..', 'clermontpcr'))
-
-
 class PcrHit(object):
     newid = itertools.count()
 
@@ -66,13 +62,6 @@ def get_args():  # pragma: no cover
     parser.add_argument("contigs", action="store",
                         help="FASTA formatted genome or set of contigs")
 
-    # # taking a hint from http://stackoverflow.com/questions/24180527
-    # requiredNamed = parser.add_argument_group('required named arguments')
-    # requiredNamed.add_argument("-F", "--fastq1", dest='fastq1', action="store",
-    #                            help="forward fastq reads, can be compressed",
-    #                            type=str, default="", required=True)
-    # # had to make this faux "optional" parse so that the named required ones
-    # # above get listed first
     optional = parser.add_argument_group('optional arguments')
     optional.add_argument("-p", "--partial", dest='partial',
                           action="store_true",
@@ -440,7 +429,7 @@ def main(args=None):
                     os.path.splitext(os.path.basename(args.contigs))[0],
                     "control_fail"
                 ))
-            sys.exit(1)
+            raise ValueError("Control (trpBA) failed")
     else:
         pass
     # run Clermont Typing
