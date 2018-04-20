@@ -6,11 +6,11 @@ import tempfile
 from argparse import Namespace
 
 # strange way to do the imports, but hey
-sys.path.append(os.path.join('..', 'clermontpcr'))
 import clermontpcr
 
 app = Flask(__name__)
-app.secret_key = 'crytographyisnotmystrongsuit'
+# app.secret_key = 'crytographyisnotmystrongsuit'
+app.secret_key = os.urandom(24)
 
 #  set the max file size to 20mb.  If an ecoli fasta is
 #    larger than this, then its probably not an e coli

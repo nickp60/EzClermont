@@ -117,7 +117,7 @@ class clermontTestCase(unittest.TestCase):
                                      "refs", ref[1] + ".fasta"),
                 partial=False,
                 ignore_control=False)
-            result = clp.main(args)
+            result, profile = clp.main(args)
             self.assertEqual(
                 ref[0], result)
 
