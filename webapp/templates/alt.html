@@ -3,19 +3,24 @@
   <!-- Primary Page Layout –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 <div class="container">
   <div class="row">
-    <div class="one-half column" style="margin-top: 20%">
+    <div class="eight columns" style="margin-top: 20%">
       <h4><i>In Silico</i> Clermont Phylotyper</h4>
       <p>Easily find the Clermont 2013 phylotypes of your <i>E. coli</i> strains. Simply upload your contigs file, and get results in seconds. </p>
     </div>
-    <div class="one-half column" style="margin-top: 20%">
-      <img src="{{url_for('static', filename='clermontPCR.png')}}" height="150" />
+    <div class="four columns columns" style="margin-top: 20%">
+      <a href="https://github.com/nickp60/clermontpcr" target="_blank">
+	<img src="{{url_for('static', filename='clermontPCR.png')}}"
+	     style='width:100%;' border="0" alt="Null">
+      </a>
     </div>
   </div>
   <!-- Input Buttons -->
   <div class="row">
     <form action="" method="POST" enctype="multipart/form-data">
-      Upload your <i>E. coli</i> contigs/genome: <input type="file" name="myfile">
-      <input type="submit" name="submit" value="Upload File" >
+      <b>1:</b>&emsp;<input type="file" name="myfile"><br>
+      <b>2:</b>&emsp;Allow Partial Matches: <input type="checkbox" name="allowpartial" unchecked><br>
+      <b>3:</b>&emsp;<input type="submit" name="submit" value="Get Clermont Phylotype!" >
+
     </form>
   </div>
 
@@ -25,15 +30,6 @@
     <pre>{{ nlines }}</pre>
   </div>
   {% if session['LOADED'] %}
-    <div class="row"  style='color:black'>
-      <form action="" method="POST" enctype="multipart/form-data">
-	<!-- Ignore TrpBA Control Fails <input type="checkbox" name="allowcontrolfails" unchecked><br> -->
-	Allow Partial Matches <input type="checkbox" name="allowpartial" unchecked><br>
-	<input type="submit" name="submit" value="Get Clermont Phylotype">
-      </form>
-    </div>
-  {% endif %}
-  {% if session['FINISHED'] %}
     <div class="row"  style='color:black'>
       <h5>Profile:</h5>
       <pre>{{ profile }}</pre>

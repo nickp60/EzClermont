@@ -40,7 +40,7 @@ def index():
     # return render_template("template.html", content=content) #
     if request.method == 'POST':
         print(request.form['submit'])
-        if request.form['submit'] == "Upload File" :
+        if request.form['submit'] == "Get Clermont Phylotype!" :
             # for secure filenames. Read the documentation.
             file = request.files['myfile']
             filename = secure_filename(file.filename)
@@ -57,26 +57,29 @@ def index():
                 addn_lines = 0
             header = "Here is the first bit of your file:"
             session["LOADED"] = True
-            return render_template(
-                'alt.html',
-                header=header,
-                content=teaser,
-                nlines="...and %d more lines" % addn_lines
-            )
-        elif request.form['submit'] == "Get Clermont Phylotype" :
-            tmpfile = get_tmpfile_path()
-            print(tmpfile)
+
+            ###   Now lets run the main function
             if os.path.isfile(tmpfile):
                 print(tmpfile)
-                return runcler(
+                results, profile  = runcler(
                     contigsfile=tmpfile,
-                    ignore_control=request.form.get('allowcontrolfails'),
+                    #ignore_control=request.form.get('allowcontrolfails'),
+                    ignore_control=False,
                     partial=request.form.get('allowpartial')
                 )
             else:
                 raise ValueError("clicky clicky clicky;  select a file first")
+            ###
+            return render_template(
+                'alt.html',
+                header=header,
+                content=teaser,
+                results=results,
+                profile=profile,
+                nlines="...and %d more lines" % addn_lines
+            )
         else:
-            raise ValueError
+            pass
     else:
         return render_template("alt.html")
 
@@ -91,11 +94,7 @@ def runcler(contigsfile, ignore_control=False, partial=False):
         results = str("Control fail!  Are you sure this is E. coli? " +
                       "Please contact the support team")
         profile = ""
-    session["FINISHED"] = True
-    return render_template(
-        "alt.html",
-        profile=profile,
-        results=results)
+    return (results, profile)
 
 if __name__ == "__main__":
     # session['tmpdir'] = tempfile.mkdtemp("clerpcr_tmps")
