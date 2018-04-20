@@ -6,7 +6,9 @@ import tempfile
 from argparse import Namespace
 
 # strange way to do the imports, but hey
-import clermontpcr
+from clermontpcr import clermontpcr
+# check that the import works
+print(clermontpcr.PcrHit)
 
 app = Flask(__name__)
 # app.secret_key = 'crytographyisnotmystrongsuit'
@@ -15,10 +17,6 @@ app.secret_key = os.urandom(24)
 #  set the max file size to 20mb.  If an ecoli fasta is
 #    larger than this, then its probably not an e coli
 app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
-
-###  Yucky globals
-# g.TMPDIR = None
-
 
 
 def default_stream_factory(total_content_length, filename, content_type, content_length=None):
@@ -100,5 +98,4 @@ def runcler(contigsfile, ignore_control=False, partial=False):
     return (results, profile)
 
 if __name__ == "__main__":
-    # session['tmpdir'] = tempfile.mkdtemp("clerpcr_tmps")
     app.run(debug=True, port=5957)

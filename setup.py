@@ -74,5 +74,10 @@ setup(
     package_data={
        '': [path.join(__name__, "tests", "refs/*")],
     },
-    scripts=['clermontpcr/clermontpcr.py'],
+    entry_points={
+       'console_scripts': [
+           'clermontpcr.py=clermontpcr.clermontpcr:main',
+       ],
+    },
+#    scripts=['clermontpcr/clermontpcr.py'],
 )

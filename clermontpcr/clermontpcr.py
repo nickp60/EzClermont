@@ -382,7 +382,9 @@ def run_primer_pair(seqs, allele, vals, allow_partial):
     return(vals, profile)
 
 
-def main(args):
+def main(args=None):
+    if args is None:
+        args = get_args()
     # chuA
     chuA_1b = "ATGGTACCGGACGAACCAAC"
     chuA_2  = "TGCCGCCAGTACCAAAGACA"
