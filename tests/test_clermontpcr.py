@@ -9,7 +9,7 @@ import unittest
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
-import clermontpcr.run as clp
+import cpcr.run as clp
 
 @unittest.skipIf((sys.version_info[0] != 3) or (sys.version_info[1] < 5),
                  "Subprocess.call among other things wont run if tried " +
@@ -128,7 +128,7 @@ class clermontTestCase(unittest.TestCase):
                                  "refs", Crypt_ref[1] + ".fasta"),
             partial=False,
             ignore_control=False)
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(ValueError):
             result = clp.main(args)
 
 
