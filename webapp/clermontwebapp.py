@@ -90,9 +90,12 @@ def runcler(contigsfile, ignore_control=False, partial=False):
     try:
         results, profile  = clermontpcr.main(args)
     except Exception as e:
-        print(e)
-        results = str("Control fail!  Are you sure this is E. coli? " +
-                      "Please contact the support team")
+        if e is AttributeError:
+            results = "Deploy error!"
+        else:
+            print(e)
+            results = str("Control fail!  Are you sure this is E. coli? " +
+                          "Please contact the support team")
         profile = ""
     return (results, profile)
 
