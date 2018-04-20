@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, session
 from werkzeug import secure_filename
 import tempfile
 from argparse import Namespace
+from Bio import SeqIO
 
 from cpcr import run as clermontpcr
 # check that the import works
@@ -27,6 +28,15 @@ def default_stream_factory(total_content_length, filename, content_type, content
 
 def get_tmpfile_path():
     return os.path.join(tempfile.gettempdir(), "tmp.fasta")
+
+
+def is_fasta(filename):
+    """ verbatim from https://stackoverflow.com/questions/44293407/
+    works because SeqIO returns an empty generator rather than an error
+    """
+    with open(filename, "r") as handle:
+        fasta = SeqIO.parse(handle, "fasta")
+        return any(fasta)  # False when `fasta` is empty, i.e. wasn't a FASTA file
 
 
 @app.route("/", methods=['GET','POST'])
@@ -56,7 +66,7 @@ def index():
             session["LOADED"] = True
 
             ###   Now lets run the main function
-            if os.path.isfile(tmpfile):
+            if os.path.isfile(tmpfile) and is_fasta(tmpfile):
                 print(tmpfile)
                 results, profile  = runcler(
                     contigsfile=tmpfile,
@@ -65,7 +75,7 @@ def index():
                     partial=request.form.get('allowpartial')
                 )
             else:
-                results = "unable to read file"
+                results = "Unable to read file.  Are you sure its a valid fasta?"
                 profile = ""
             ###
             return render_template(
