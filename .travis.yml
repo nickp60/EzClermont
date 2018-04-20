@@ -11,16 +11,20 @@ before install:
 install:
 - pip install coveralls
 - pip install -r requirements.txt
-#- "./install_tools.sh"
-#- "./debug_travis.sh"
 script:
 - python setup.py install
 - nosetests --with-coverage --cover-package=clermontpcr tests/ -v
 after_success: coveralls
-deploy:
-  - provider: pypi
-    user: NickWaters
-    password:
-      secure: "QDAAEWnQXISybC+I+ImxS5DPoeA6Z0sl0ExYdjusGc+/HZwiS+xjYnLqM7YHzT3IltjSzCCPxQWzmtGgpdwO1n/QlCxnlajoHCpnLMVHZ8xrXcSmx7J0MfkG4JpbS4MCCf7Q0VLHHHbKtkfiR8HDIeNFYDyOTXT92+Htqo5p/qLoEqAViD3N3QTEhBjdIjMIu7qP69I4t+3+zE2ehMrgdPmnl4w6K/CYTrbQFj8651od7BeJRkFW4GetFI1FR9TgW1/AUNjqPjfqLE15TN1ibTH4o4zW9lWq3Cjo5UQFNNFIwK5XPa2o6Ke3hNrprS4rSQD9EAj1GzM+OcR8OMO5rqRAvVn3tke4i1LEIH9RZdLWp9A8KtnL4tu7ZWrodSIghHiLfV+HEEJAKg5dgyFtvcF2zChC4Wt92BWjQovE0ff/Jg+G1wIOJjk1mnFvWlZcRSgYqdIklJmPwMwOksf6N4n2fLfLo7Euu2OR8VE8BLhN+WyKSLXQ0vv67CZDtSN+8u+YLWeS2O6SFolh5zm9rnuU7c68+eAse0k7xIobM0CItPl5oXjrI8j3GkA6WSFaDxrUJv5P2fg4dxgsN1DV1HOOS1ivt2kWTslt4Qlf7AHdONr10bv09/tKayJdHheYPZUvt7vr7w2KJKW55klgqb+qocXgp5upwp313gzFQwk="
-    on:
-      tags: true
+
+
+jobs:
+  include:
+    - stage: deploy
+      script: echo "Deploying to PyPi"
+      deploy:
+        provider: pypi
+        user: NickWaters
+        password:
+          secure: "QDAAEWnQXISybC+I+ImxS5DPoeA6Z0sl0ExYdjusGc+/HZwiS+xjYnLqM7YHzT3IltjSzCCPxQWzmtGgpdwO1n/QlCxnlajoHCpnLMVHZ8xrXcSmx7J0MfkG4JpbS4MCCf7Q0VLHHHbKtkfiR8HDIeNFYDyOTXT92+Htqo5p/qLoEqAViD3N3QTEhBjdIjMIu7qP69I4t+3+zE2ehMrgdPmnl4w6K/CYTrbQFj8651od7BeJRkFW4GetFI1FR9TgW1/AUNjqPjfqLE15TN1ibTH4o4zW9lWq3Cjo5UQFNNFIwK5XPa2o6Ke3hNrprS4rSQD9EAj1GzM+OcR8OMO5rqRAvVn3tke4i1LEIH9RZdLWp9A8KtnL4tu7ZWrodSIghHiLfV+HEEJAKg5dgyFtvcF2zChC4Wt92BWjQovE0ff/Jg+G1wIOJjk1mnFvWlZcRSgYqdIklJmPwMwOksf6N4n2fLfLo7Euu2OR8VE8BLhN+WyKSLXQ0vv67CZDtSN+8u+YLWeS2O6SFolh5zm9rnuU7c68+eAse0k7xIobM0CItPl5oXjrI8j3GkA6WSFaDxrUJv5P2fg4dxgsN1DV1HOOS1ivt2kWTslt4Qlf7AHdONr10bv09/tKayJdHheYPZUvt7vr7w2KJKW55klgqb+qocXgp5upwp313gzFQwk="
+      on:
+        tags: true
