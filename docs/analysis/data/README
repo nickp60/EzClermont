@@ -1,0 +1,5 @@
+cat PRJNA321606_AssemblyDetails.txt |  tail -n 72 | cut -f 1,5 > accession_name.txt
+cat PRJNA321606_AssemblyDetails.txt |  tail -n 72 | cut -f 1 > accessions.txt
+use the accessions.txt file with Entrez batchto download all the assemblies as a genomic fasta
+Download the metadata from http://www.shigatox.net/new/reference-strains/ecor.html
+Use default settings on a tool like http://www.convertcsv.com/html-table-to-csv.htm to get that into a nice table.
