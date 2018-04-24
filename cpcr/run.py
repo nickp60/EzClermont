@@ -283,8 +283,9 @@ def interpret_hits(arpA, chu, yjaA, TspE4):
     raise ValueError("results profile could not be interpretted! Exiting")
 
 
-def refine_hits(hit, c_primers, e_primers, cryptic_chu_primers,
+def refine_hits(hit, c_primers, e_primers, cryptic_chu_primers, EC_control_fail,
                 allow_partial, seqs):
+
     if hit == "D/E":
         e_primers["arpA_e"], report_string = run_primer_pair(
             seqs=seqs, allele="arpA_e",
@@ -411,27 +412,29 @@ def main(args=None):
     with open(args.contigs, 'r') as fasta:
         seqs = list(SeqIO.parse(fasta, 'fasta'))
 
-    # Start with the Control primers before trying anythong else
+    # Start with the Control primers before trying anything else
+    # these are used primarily for differentiating the C/E groups
     sys.stderr.write("Running Control PCR\n")
     controls["trpBA_control"], report_string = run_primer_pair(
         seqs=seqs, allele="trpBA_control",
         vals=controls["trpBA_control"],
         allow_partial=args.partial)
     sys.stderr.write(report_string + "\n")
+    EC_control_fail = False
     if not controls["trpBA_control"][3]:
-        if args.ignore_control:
-            sys.stderr.write(
+        sys.stderr.write(
                 "No matches found for control PCR, but continuing analysis\n")
-        else:
-            sys.stderr.write("No matches found for control PCR.  Exiting\n")
-            sys.stdout.write(
-                "{0}\t{1}\n".format(
-                    os.path.splitext(os.path.basename(args.contigs))[0],
-                    "control_fail"
-                ))
-            raise ValueError("Control (trpBA) failed")
-    else:
-        pass
+        EC_control_fail = True
+    #     else:
+    #         sys.stderr.write("No matches found for control PCR.  Exiting\n")
+    #         sys.stdout.write(
+    #             "{0}\t{1}\n".format(
+    #                 os.path.splitext(os.path.basename(args.contigs))[0],
+    #                 "control_fail"
+    #             ))
+    #         raise ValueError("Control (trpBA) failed")
+    # else:
+    #     pass
     # run Clermont Typing
     sys.stderr.write("Running Quadriplex PCR\n")
     profile = ""
@@ -449,12 +452,23 @@ def main(args=None):
                                    chu=quad_primers['chu'][3],
                                    TspE4=quad_primers['TspE4'][3],
                                    yjaA=quad_primers['yjaA'][3])
-    Clermont_type = refine_hits(hit=Clermont_type,
-                                c_primers=c_primers,
-                                e_primers=e_primers,
-                                cryptic_chu_primers=cryptic_chu_primers,
-                                allow_partial=args.partial,
-                                seqs=seqs)
+    refine = True
+    if "C" in Clermont_type or "A" in Clermont_type or "U" in Clermont_type:
+        # All these reactions use the internal control.  If that fails,
+        # we call it "EC_control_fail"
+        if EC_control_fail:
+            sys.stderr.write("No matches found for C/E control PCR. Exiting\n")
+            Clermont_type = "EC_control_fail"
+            refine = False
+    if refine:
+        Clermont_type = refine_hits(
+            hit=Clermont_type,
+            c_primers=c_primers,
+            e_primers=e_primers,
+            cryptic_chu_primers=cryptic_chu_primers,
+            allow_partial=args.partial,
+            EC_control_fail=EC_control_fail,
+            seqs=seqs)
     sys.stderr.write("Clermont type: %s\n" % Clermont_type)
     sys.stderr.write("-------------------------\n")
     # This should be the only thing being written to stdout

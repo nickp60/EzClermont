@@ -128,8 +128,8 @@ class clermontTestCase(unittest.TestCase):
                                  "refs", Crypt_ref[1] + ".fasta"),
             partial=False,
             ignore_control=False)
-        with self.assertRaises(ValueError):
-            result = clp.main(args)
+        result, profile  = clp.main(args)
+        self.assertEqual(result, "EC_control_fail")
 
 
 if __name__ == "__main__":

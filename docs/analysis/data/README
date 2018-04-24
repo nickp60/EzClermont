@@ -3,3 +3,18 @@ cat PRJNA321606_AssemblyDetails.txt |  tail -n 72 | cut -f 1 > accessions.txt
 use the accessions.txt file with Entrez batchto download all the assemblies as a genomic fasta
 Download the metadata from http://www.shigatox.net/new/reference-strains/ecor.html
 Use default settings on a tool like http://www.convertcsv.com/html-table-to-csv.htm to get that into a nice table.
+
+
+
+Manually copied and pasted table 2 from "Guide to the various phylogenetic classification schemes for Escherichia coliand the correspondence among schemes" Olivier Clermont, David Gordon and Erick Denamur
+
+Downloaded the PRJNA321606 assemblies from GenBank
+
+Added the assembly accessions for remaining strains in the table manually.  5 were missing
+
+Used entrex batch to download the 23 remaining assemblies
+
+
+Remember to pad the 0s in the metadata so things match up.
+
+for i in ./docs/analysis/data/other_accessions/*.fna ; do echo processing ./docs/analysis/data/other_accessions/GCA_002110555.1_ASM211055v1_genomic.fna; clermontpcr ./docs/analysis/data/other_accessions/GCA_002110555.1_ASM211055v1_genomic.fna 1>> 2018-04-20-combined.txt 2>>2018-04-20-log-combined.txt; done
