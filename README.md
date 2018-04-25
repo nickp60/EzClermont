@@ -1,23 +1,24 @@
-[![Build Status](https://travis-ci.org/nickp60/clermontpcr.svg?branch=master)](https://travis-ci.org/nickp60/clermontpcr.svg?branch=master)[![Coverage Status](https://coveralls.io/repos/github/nickp60/clermontpcr/badge.svg?branch=master)](https://coveralls.io/github/nickp60/clermontpcr?branch=master)[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PyPI version](https://badge.fury.io/py/clermontpcr.svg)](https://badge.fury.io/py/clermontpcr)
+[![Build Status](https://travis-ci.org/nickp60/clermontpcr.svg?branch=master)](https://travis-ci.org/nickp60/EzClermont.svg?branch=master)[![Coverage Status](https://coveralls.io/repos/github/nickp60/EzClermont/badge.svg?branch=master)](https://coveralls.io/github/nickp60/EzClermont?branch=master)[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PyPI version](https://badge.fury.io/py/clermontpcr.svg)](https://badge.fury.io/py/ezclermont)
 
-![Icon](https://github.com/nickp60/clermontpcr/blob/master/icon/clermontPCR-0.png)
-# Clermont PCR typing tool
+![Icon](https://github.com/nickp60/EzClermont/blob/master/icon/clermontPCR-0.png)
+# EzClermont: The *E. coli* Clermont PCR phylotyping tool
 
 ## Description
 
-This is a tool for using the Clermont 2013 PCR typing method for *in silico* analysis of *E. coli* whole genomes or assembled contigs. This has no fancy bells, whistles, mismatch handling, fuzzy searches, or any of that nonsense.  This is the work of Sunday night and Monday morning, December 11-12 2016, and whatever modification need to be done to keep it chugging along.
+This is a tool for using the Clermont 2013 PCR typing method for *in silico* analysis of *E. coli* whole genomes or assembled contigs.
 
-I updated on August 2, 2017 to add reactions that differentiate A/C, D/E/cryptic, and to add more robust tests.
+### Changelog
+ - made a webapp on April 19th, 2018 after requests from several to make the tool more user friendly.
+ - updated on August 2, 2017 to add reactions that differentiate A/C, D/E/cryptic, and to add more robust tests.
+ - released Dec. 2016
 
-I then made a webapp on April 19th, 2018 after requests from several to make the tool more user friendly.
 
-The concept is loosely based on the SMS2 webtool for doing PCR product size prediction.
-
+## Usage
 There are (at this time) two command line options:
 
 ```
-usage: clermontPCR.py [-p] [-c] [-h] contigs
+usage: ezclermont [-p] [-c] [-h] contigs
 
 run a 'PCR' to get clermont types
 
@@ -41,18 +42,16 @@ A minimal "filename.fasta    ClermontType" output can be piped to a results file
 ```
 for i in strain1 strain2 strain3;
 	do
-	python3 clermontPCR.py ${i} >> results.txt
+	  ezclermont ${i} >> results.txt
 done
 ```
-
-This is provided with no guarantee that it will correlate nicely with your experimental data.  If your PCRs work nicely in the lab and disagree with what this program tells you, I would say 'bands don't lie' and move on.
 
 
 Have fun!
 
 
 ### Testing
-The tests can be run by either unittests or nosetests.  I dont have a validating C phylotype example, due to some [discrepancies](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0105395) noted in the literature
+The tests can be run by either unittests or nosetests.
 
 ### Requirements
 #### commandline tool
@@ -64,3 +63,6 @@ biopython
 
 ## Acknowledgements
 Thanks to [Dave Gamache]( https://github.com/dhg/Skeleton) for Skeleton, the webapp CSS theme.
+
+## Name note
+The name of this repo (and pypi package was changed on April 21 from ClermontPCR to EzClermont.

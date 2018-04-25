@@ -1,5 +1,5 @@
 """
-Setup for clermontpcr
+Setup for EzClermont
 """
 
 # Always prefer setuptools over distutils
@@ -33,17 +33,17 @@ if sys.version_info <= (3, 0):
     sys.exit(1)
 
 setup(
-    name='clermontpcr',
+    name='ezclermont',
     version=verstr,
 
-    description='clermontpcr: phylotype your strains, in silico',
+    description='ezclermont: phylotype your E. coli strains, in silico',
     # long_description=long_description,
     long_description="""
     check out the GitHub
     repo for the real README.md file
     """,
 
-    url='https://github.com/nickp60/clermontpcr',
+    url='https://github.com/nickp60/EzClermont',
 
     # Author details
     author='Nick Waters',
@@ -68,8 +68,7 @@ setup(
     },
     entry_points={
        'console_scripts': [
-           'clermontpcr=cpcr.run:main',
-       ],                  
+           'ezclermont=cpcr.run:main',
+       ],
     },
-#    scripts=['clermontpcr/clermontpcr.py'],
 )
