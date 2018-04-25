@@ -36,3 +36,5 @@ https://www.ncbi.nlm.nih.gov/gene/945768
 
 ~/GitHub/open_utils/extractRegion/extractRegion.py -l ./test/simpleOrtho_regions.txt combined.fasta > regions.fasta
 
+mv ./PRJNA231221/* ./combined/
+cat ./combined/*.fna >combined.fasta
