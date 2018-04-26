@@ -154,12 +154,12 @@ def get_matches(allele, seq_list, fwd_primer, rev_primer, expected_size,
         coords_R = None
         try:
             coords_F = fwd.search(str(i.seq)).span()
-            sys.stderr.write("F match!\n")
+            sys.stderr.write("F match! on %s \n" % i.id)
         except:
             pass
         try:
             coords_R = rev.search(str(i.seq)).span()
-            sys.stderr.write("R match!\n")
+            sys.stderr.write("R match! on %s \n" % i.id)
         except:
             pass
 
@@ -268,9 +268,9 @@ def interpret_hits(arpA, chu, yjaA, TspE4):
             "E/cryptic": [[1, 1, 1, 0]],
             "cryptic":   [[0, 0, 1, 0]],
             # add this in when we learn the frag sequence, see note below
-            # "U/cryptic": [[0, 0, 0, 0]]
-            "U":         [[0, 0, 0, 0],
-                          [0, 0, 0, 1],
+            "U/cryptic": [[0, 0, 0, 0]],
+            # "U":         [[0, 0, 0, 0],
+            "U":         [[0, 0, 0, 1],
                           [0, 0, 1, 1],
                           [1, 0, 1, 1],
                           [1, 1, 1, 1]]
@@ -324,17 +324,16 @@ def refine_hits(hit, c_primers, e_primers, cryptic_chu_primers, EC_control_fail,
     # presence of the chuA.2 primer. This has been confirmed by sequencing of
     # the PCR product (data not shown)."
 
-    # Note that currently this isn't called, as I haven't figured out what
-    # fragment should be made
-    elif hit == "U/cryptic":
-        cryptic_chu_primers["476_chu"], report_string = run_primer_pair(
-            seqs=seqs, allele="476_chu",
-            vals=cryptic_chu_primers["476_chu"],
-            allow_partial=allow_partial)
-        if cryptic_chu_primers["476_chu"][3]:
-            return "cryptic"
-        else:
-            return "U"
+    #  I dont have a test case for this, so we will just report abiguously
+    # elif hit == "U/cryptic":
+    #     cryptic_chu_primers["476_chu"], report_string = run_primer_pair(
+    #         seqs=seqs, allele="476_chu",
+    #         vals=cryptic_chu_primers["476_chu"],
+    #         allow_partial=allow_partial)
+    #     if cryptic_chu_primers["476_chu"][3]:
+    #         return "cryptic"
+    #     else:
+    #         return "U"
     else:
         return hit
 
@@ -391,7 +390,7 @@ def main(args=None):
     TspE4C2_2b = "AGTTTATCGCTGCGGGTCGC"
     # arpA
     AceK_f =  "AA[CT]GC[TC]ATTCGCCAGCTTGC"
-    ArpA1_r = "TCTCC[CA]CATA[TC][AC]G[CT]ACGCTA"
+    ArpA1_r = "TCTCC[CA]CATA[CT][CA]G[TC]ACGCTA"
     #################################
     # arpA, for group e
     ArpAgpE_f = "GAT[GT]CCAT[CT]TTGTC[AG]AAATATGCC"
@@ -459,7 +458,7 @@ def main(args=None):
                                    TspE4=quad_primers['TspE4'][3],
                                    yjaA=quad_primers['yjaA'][3])
     refine = True
-    if "C" in Clermont_type or "A" in Clermont_type or "U" in Clermont_type:
+    if Clermont_type in ["A/C", "D/E", "E/cryptic"]:
         # All these reactions use the internal control.  If that fails,
         # we call it "EC_control_fail"
         if EC_control_fail:

@@ -20,7 +20,7 @@ class clermontTestCase(unittest.TestCase):
     def test_interpret(self):
 
         ref = ['A', 'A/C', 'B1', 'A/C', 'D/E', 'D/E', 'E/cryptic', 'D/E',
-               'D/E', 'F', 'B2', 'B2', 'B2', 'cryptic', 'E/cryptic', 'U']
+               'D/E', 'F', 'B2', 'B2', 'B2', 'cryptic', 'E/cryptic', 'U/cryptic']
         test = []
         # if True:
         # A's
@@ -108,7 +108,7 @@ class clermontTestCase(unittest.TestCase):
         F1_ref = ["F", "NC_011750.1"]
         F2_ref = ["F", "LYBO00000000.1"]
         B2_ref = ["B2", "CU651637.1"]
-        Ferg_ref = ["U", "NC_011740.1"]
+        Ferg_ref = ["U/cryptic", "NC_011740.1"]
 
         for ref in [A_ref, B1_ref, C_ref, E1_ref, E2_ref, D_ref, F1_ref,
                     F2_ref, B2_ref, Ferg_ref]:
@@ -129,8 +129,17 @@ class clermontTestCase(unittest.TestCase):
             partial=False,
             ignore_control=False)
         result, profile  = clp.main(args)
-        self.assertEqual(result, "EC_control_fail")
+        self.assertEqual(result, "U/cryptic")
 
+    # def test_integration_cladeV(self):
+    #     Crypt_ref = ["Cryptic", "ADKG01.1"]
+    #     args = argparse.Namespace(
+    #         contigs=os.path.join(os.path.dirname(__file__),
+    #                              "refs", Crypt_ref[1] + ".fasta"),
+    #         partial=False,
+    #         ignore_control=False)
+    #     result, profile  = clp.main(args)
+    #     self.assertEqual(result, "cryptic")
 
 if __name__ == "__main__":
     unittest.main()
