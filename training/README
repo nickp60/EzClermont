@@ -38,3 +38,4 @@ https://www.ncbi.nlm.nih.gov/gene/945768
 
 mv ./PRJNA231221/* ./combined/
 cat ./combined/*.fna >combined.fasta
+for GENEF in refs/*.fasta ; do BN=yjaA.fasta; GENE=yjaA; REG=yjaA; echo yjaA ;   ~/GitHub/open_utils/orthoML/simpleOrtho.py refs/yjaA.fasta ./combined/ -n -v 1 -o yjaA_out -t 4 ; ~/GitHub/open_utils/extractRegion/extractRegion.py -l ./yjaA_out/simpleOrtho_regions.txt ./combined.fasta > yjaA_regions.fasta; mafft --thread 4 ./yjaA_regions.fasta > yjaA_regions_aligned.fasta; rm yjaA_out -rf; done

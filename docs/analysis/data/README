@@ -17,4 +17,4 @@ Used entrex batch to download the 23 remaining assemblies
 
 Remember to pad the 0s in the metadata so things match up.
 
-for i in ./docs/analysis/data/other_accessions/*.fna ; do echo processing ./docs/analysis/data/other_accessions/GCA_002110555.1_ASM211055v1_genomic.fna; clermontpcr ./docs/analysis/data/other_accessions/GCA_002110555.1_ASM211055v1_genomic.fna 1>> 2018-04-20-combined.txt 2>>2018-04-20-log-combined.txt; done
+for i in ./docs/analysis/data/other_accessions/*.fna ; do echo "processing $i" ; clermontpcr $i 1 >> 2018-04-26-combined.txt 2>>2018-04-26-log-combined.txt; done
