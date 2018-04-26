@@ -287,6 +287,7 @@ def refine_hits(hit, c_primers, e_primers, cryptic_chu_primers, EC_control_fail,
                 allow_partial, seqs):
 
     if hit == "D/E":
+        sys.stderr.write("Clermont type is D/E; running ArpAgpE primers\n")
         e_primers["arpA_e"], report_string = run_primer_pair(
             seqs=seqs, allele="arpA_e",
             vals=e_primers["arpA_e"],
@@ -296,6 +297,7 @@ def refine_hits(hit, c_primers, e_primers, cryptic_chu_primers, EC_control_fail,
         else:
             return "D"
     elif hit == "E/cryptic":
+        sys.stderr.write("Clermont type is E/cryptic; running ArpAgpE primers\n")
         e_primers["arpA_e"], report_string = run_primer_pair(
             seqs=seqs, allele="arpA_e",
             vals=e_primers["arpA_e"],
@@ -305,6 +307,7 @@ def refine_hits(hit, c_primers, e_primers, cryptic_chu_primers, EC_control_fail,
         else:
             return "cryptic"
     elif hit == "A/C":
+        sys.stderr.write("Clermont type is A/C; running the trpAgpC primers\n")
         c_primers["trpA_c"], report_string = run_primer_pair(
             seqs=seqs, allele="trpA_c",
             vals=c_primers["trpA_c"],
@@ -375,31 +378,35 @@ def run_primer_pair(seqs, allele, vals, allow_partial):
 def main(args=None):
     if args is None:
         args = get_args()
+    ####### Quadriplex PCR ########
     # chuA
     chuA_1b = "ATGGTACCGGACGAACCAAC"
-    chuA_2  = "TGCCGCCAGTACCAAAGACA"
+    chuA_2  = "TGCC[GA]CCAGTACCAAAGACA"
     # yjaH
     yjaA_1b = "CAAACGTGAAGTGTCAGGAG"
     yjaA_2b = "AAT[GA]CGTTCCTCAACCTGTG"
     # TspE4.C2
-    TspE4_C2 = "CACTATTCGTAAGGTCATCC"
+    # TspE4_C2 = "CACTATTCGTAAGGTCATC[CG]"
+    TspE4C2_1b =   "CACTATTCGTAAGGTCATCC"
     TspE4C2_2b = "AGTTTATCGCTGCGGGTCGC"
     # arpA
-    AceK_f = "AA[CT]GC[TC]ATTCGCCAGCTTGC"
+    AceK_f =  "AA[CT]GC[TC]ATTCGCCAGCTTGC"
     ArpA1_r = "TCTCC[CA]CATA[TC][AC]G[CT]ACGCTA"
+    #################################
     # arpA, for group e
-    ArpAgpE_f = "GATTCCATCTTGTCAAAATATGCC"
-    ArpAgpE_r = "GAAAAGAAAAAGAATTCCCAAGAG"
+    ArpAgpE_f = "GAT[GT]CCAT[CT]TTGTC[AG]AAATATGCC"
+    ArpAgpE_r = "GAAAA[GT]AAAAAGA[AC]TT[CT][CAT]CAAGAG"
     # trpA, for group c
-    trpAgpC_1 = "AGTTTTATGCCCAGTGCGAG"
-    trpAgpC_2 = "TCTGCGCCGGTCACGCCC"
+    trpAgpC_1 = "AGTTTTATGCC[CG]A[GA]TGCGAG"
+    trpAgpC_2 = "TC[TA]GC[GT]C[CT]GGTCACGCCC"
+    # trpAgpC_2 = "TC[TA]GC[GT]C[CT]GGTCA[CT][GA]CC[CT]"
     # trpA, for control
-    trpBA_f = "CGGCGATAAAGACATCTTCAC"
-    trpBA_r = "GCAACGCGGCCTGGCGGAA[GA]"
+    trpBA_f = "CGGCGATAAAGACAT[CT]TTCAC"
+    trpBA_r = "GCAACGCGGC[CT]TGGCGGAAG"
 
     quad_primers = {"chu": [chuA_1b, chuA_2, 288],
                     "yjaA": [yjaA_1b, yjaA_2b, 211],
-                    "TspE4": [TspE4_C2, TspE4C2_2b, 152],
+                    "TspE4": [TspE4C2_1b, TspE4C2_2b, 152],
                     "arpA": [AceK_f, ArpA1_r, 400]}
     c_primers = {"trpA_c": [trpAgpC_1, trpAgpC_2, 219]}
     e_primers = {"arpA_e": [ArpAgpE_f, ArpAgpE_r, 301]}
