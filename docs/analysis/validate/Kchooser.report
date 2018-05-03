@@ -1,0 +1,15 @@
+Initial value of k is 13.
+When k is 13 0.84533042500448 of the kmers from the median length sequence are unique.
+When k is 15 0.977814955605353 of the kmers from the median length sequence are unique.
+When k is 17 0.992838831612397 of the kmers from the median length sequence are unique.
+The optimum value of K is 19.
+When k is 19 0.994158128850926 of the kmers from the median length sequence are unique.
+
+There were 95 genomes.
+The median length genome was 5092218 bases.
+The time used was 2001 seconds
+
+From a sample of 995 unique kmers  213 are core kmers.
+0.214070351758794 of the kmers are present in all genomes.
+
+FCK = 0.214.
