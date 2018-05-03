@@ -1,0 +1,46 @@
+Escherichia coli is among the most widely studied organisms, and the species is very diverse.  Because of this diversity, methods were needed to differentiate the different  E coli lineages.  In 2000, Clermont and colleagues published their triplex PCR method of phylotyping, which proved to be an extremely valuable tool, being cited over 625 times as of April, 2018.  In 2013, Clermont and colleagues published an update to this work, in which they showed that by adding a 4th set of primers (with additional primers to differentiate the cryptic clades), higher resolution could be achieved.  This approach has been widely adopted, as the method is both reliable, easy to interpret, and can be performed rapidly.  .
+
+Other sequence typing schemes have been developed to classify E. coli strains with greater accuracy, but usually at the cost of interpretability. The Clermont 2013 phylotyping scheme remains a regular tool in classifying E. coli.
+
+We developed EzClermont to provide an simple implementation of the Clermont phylotyping algorithm to genome assemblies.  For researches unfamiliar with command-line tools, we have implemented the software as a web application; for those needing to process large numbers of assemblies, a command-line interface can be installed via pip.
+
+In short, the software uses constrained string matching as an in silico PCR to determine the presence or absence of the alleles used to determine the Clermont phylotype. As assemblies may contain alleles interrupted by breaks between contigs, we give the user the option to allow partial matches (ie, if one of the two primers matched, but the expected position of the other primer fell beyond the sequence end).
+
+As PCR primers do not necessarily need 100\% sequence identity to function, we determined the variability at the priming sites in 523 strains. To do this, we downloaded the genomes from bioprojects PRJNA218110, PRJNA231221,  and PRJNA352562, and from each extracted the 7 regions matching the theoretical aplicons of the quadriplex pcr, E specific, C specific, and E/C control primer sets.  Any differences between a sequence and the primer sequence reported in Clermont 2013 was incorporated into the search query, except for differences in the last 5 nucleotides on the 3’ regions (as those can be used to differentiate alleles)[ref].
+
+To assess the performace of Exclermont, we selected a test dataset and a validation dataset.  Additionally, the strains from clermont, 2103 figure 1 are used as unit tests in the package.
+As a test set, we used strains listed in Sims and Kim work[ref], and the validation set of 95 strains was the genomes from Clermont 2015.  Of the 19 strains in Sims and Kim (excluding the other strains that were common to Clermont 2015 and Sims and Kim).  3 Of the 19 did not agree, but of those (IAI39, SMS-3-5) we’re shown by other works [ref][ref] to have the phylotype that Exclermont predicted.  The one strain that typed differently (APEC01) was examined, and was found to have the ArpA allele that should differentiate the two groups.
+
+
+Strain
+Assembly
+sims and Kim
+Ezclermont
+Notes
+APEC01
+GCA_003028815.1
+B2
+A
+found arpA fragment
+IAI39
+GCA_000026345.1
+D
+F
+
+SMS-3-5
+GCA_000019645.1
+D
+F
+
+
+To benchmark EzClermont, we ran the 95 strains from Clermont 2015 through, and compared the results to the reported results. 85 of the 95 strains classifications matched. Of those that didnt match, 4/10 failed to find a fragment that should be present, and 6/10 found at least one fragment that was not reported to be there.  We suspect that
+
+
+
+https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2797725/
+
+http://www.pnas.org/node/72945.full#T1
+
+https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5471185/
+
+http://www.microbiologyresearch.org/docserver/fulltext/micro/162/11/1904_micro000367
