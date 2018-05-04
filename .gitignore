@@ -102,3 +102,7 @@ ENV/
 *~
 *.sslist
 *.DS_Store
+*.aux
+*.bbl
+*.blg
+*.out

@@ -72,7 +72,9 @@ colors = c(A="grey", B1="darkgreen", B2="purple",   C="orange", "Clade I"="yello
     scale_color_manual(values = colors) + 
     scale_size_area(guide=F)  +
     scale_shape_discrete(guide=F) +
-    labs(title="Parsimony cladogram of strains from Clermont, et al 2015", color="Phylogroup", subtitle="Tree generated with kSNP3 (k=19). Enlarged circular tips show where EzClermont \ndiffered from reported phylogroup (EzClermont type show in brackets)." ) +
+    labs(title="", color="Phylogroup" ) +
+    # 
+    # labs(title="Parsimony cladogram of strains from Clermont, et al 2015", color="Phylogroup", subtitle="Tree generated with kSNP3 (k=19). Enlarged circular tips show where EzClermont \ndiffered from reported phylogroup (EzClermont type show in brackets)." ) +
     theme(legend.position="right") 
   
 )

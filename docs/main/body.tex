@@ -1,46 +1,25 @@
-Escherichia coli is among the most widely studied organisms, and the species is very diverse.  Because of this diversity, methods were needed to differentiate the different  E coli lineages.  In 2000, Clermont and colleagues published their triplex PCR method of phylotyping, which proved to be an extremely valuable tool, being cited over 625 times as of April, 2018.  In 2013, Clermont and colleagues published an update to this work, in which they showed that by adding a 4th set of primers (with additional primers to differentiate the cryptic clades), higher resolution could be achieved.  This approach has been widely adopted, as the method is both reliable, easy to interpret, and can be performed rapidly.  .
+\textit{Escherichia coli} is among the most widely studied organisms, and the species is very diverse\cite{Lukjancenko2010, Selander1987}.  Because of this diversity, many methods have been developed to differentiate the different  \textit{E. coli} lineages.  In 1987, Selandar  and colleagues used electrophoretic analysis of a 35 enzyme digest to classify the \textit{E. coli} Reference Collection (ECOR) in 6 phylogenetic groups (A-F)\cite{Selander1987}.  Clermont and colleagues published their triplex PCR method of phylotyping, which proved to be an extremely valuable tool to differentiate groups A, B1, B2, and D, being cited over 625 times as of April 2018.  In 2013, Clermont and colleagues published an update to this work, in which they showed that by adding a 4th set of primers (with additional primers to differentiate the subgroups and the cryptic clades), higher resolution could be achieved, as this expanded the method to detect groups E, F, and differentiate the cryptic clades.  This approach has been widely adopted, as the method is reliable, easy to interpret, and can be performed rapidly.
 
-Other sequence typing schemes have been developed to classify E. coli strains with greater accuracy, but usually at the cost of interpretability. The Clermont 2013 phylotyping scheme remains a regular tool in classifying E. coli.
+Other sequence typing schemes have been developed to classify \textit{E. coli} strains. These include the Achtman 2012 7 gene Multi Locus Sequence Typing (MLST)\cite{Achtman2012}, Michigan EcMLST\cite{Qi2004}, whole-genome MLST (\url{http://www.applied-maths.com/applications/wgmlst}), core-genome MLST\cite{DeBeen2015},  two-locus MLST\cite{Weissman2012}, and ribosomal MLST\cite{Jolley2012}.  All these methods classify \textit{E. coli} with greater accuracy and granularity than the phylotyping, but at the cost of interpretability.  The Clermont 2013 phylotyping scheme remains a regularly utilised tool in classifying \textit{E. coli}.
 
-We developed EzClermont to provide an simple implementation of the Clermont phylotyping algorithm to genome assemblies.  For researches unfamiliar with command-line tools, we have implemented the software as a web application; for those needing to process large numbers of assemblies, a command-line interface can be installed via pip.
+We developed EzClermont to provide a simple implementation of the Clermont phylotyping algorithm to genome assemblies.  For researchers unfamiliar with command-line tools, we have implemented the software as a web application; for those needing to process large numbers of assemblies, a command-line interface can be installed via pip.
 
-In short, the software uses constrained string matching as an in silico PCR to determine the presence or absence of the alleles used to determine the Clermont phylotype. As assemblies may contain alleles interrupted by breaks between contigs, we give the user the option to allow partial matches (ie, if one of the two primers matched, but the expected position of the other primer fell beyond the sequence end).
+In short, the software uses constrained string matching as an in silico PCR to determine the presence or absence of the alleles used to determine the phylotype. As assemblies may contain alleles interrupted by breaks between contigs, we give the user the option to allow partial matches (ie, if one of the two primers matched, but the expected position of the other primer fell beyond the sequence end).
 
-As PCR primers do not necessarily need 100\% sequence identity to function, we determined the variability at the priming sites in 523 strains. To do this, we downloaded the genomes from bioprojects PRJNA218110, PRJNA231221,  and PRJNA352562, and from each extracted the 7 regions matching the theoretical aplicons of the quadriplex pcr, E specific, C specific, and E/C control primer sets.  Any differences between a sequence and the primer sequence reported in Clermont 2013 was incorporated into the search query, except for differences in the last 5 nucleotides on the 3’ regions (as those can be used to differentiate alleles)[ref].
+As PCR primers do not necessarily need 100\% sequence identity to function, we determined the variability at the priming sites in 523 strains. To do this, we downloaded the genome assemblies from NCBI Bioprojects PRJNA218110, PRJNA231221, and PRJNA352562.  From each assembly, we extracted the 7 regions matching the theoretical amplicons of the quadriplex, E-specific, C-specific, and E/C control primer sets from Clermont 2013.  Any differences between a sequence and the primer sequence reported in Clermont 2013 were incorporated into the search query, except for differences in the last 5 nucleotides on the 3’ regions (as those can be used to differentiate alleles)\cite{Stadhouders2010}.
 
-To assess the performace of Exclermont, we selected a test dataset and a validation dataset.  Additionally, the strains from clermont, 2103 figure 1 are used as unit tests in the package.
-As a test set, we used strains listed in Sims and Kim work[ref], and the validation set of 95 strains was the genomes from Clermont 2015.  Of the 19 strains in Sims and Kim (excluding the other strains that were common to Clermont 2015 and Sims and Kim).  3 Of the 19 did not agree, but of those (IAI39, SMS-3-5) we’re shown by other works [ref][ref] to have the phylotype that Exclermont predicted.  The one strain that typed differently (APEC01) was examined, and was found to have the ArpA allele that should differentiate the two groups.
+To assess the performance of EzClermont, we selected a test dataset and a validation dataset.  Additionally, the strains from Clermont, 2013 Figure 1 are used as unit tests in the package.
 
-
-Strain
-Assembly
-sims and Kim
-Ezclermont
-Notes
-APEC01
-GCA_003028815.1
-B2
-A
-found arpA fragment
-IAI39
-GCA_000026345.1
-D
-F
-
-SMS-3-5
-GCA_000019645.1
-D
-F
-
-
-To benchmark EzClermont, we ran the 95 strains from Clermont 2015 through, and compared the results to the reported results. 85 of the 95 strains classifications matched. Of those that didnt match, 4/10 failed to find a fragment that should be present, and 6/10 found at least one fragment that was not reported to be there.  We suspect that
+As a test set, we used strains listed in Sims and Kim 2011\cite{Sims2011} (Table S1), and the validation set of 95 strains was the genomes from Clermont 2015\cite{Denamur2015} (Table S2)\footnote{6 of the 101 total strains were omitted as no genome assembly was available.}.  Comparing the reported phylogroup and the EzClermont phylogroup for the 19 strains in Sims and Kim (excluding strains reported in both Clermont 2015 and Sims and Kim),  3 of the 19 did not agree, but two of those (IAI39, SMS-3-5) were shown by other works to have the phylotype that EzClermont predicted (see Table \ref{tab:sims}).  The one strain that typed differently (APEC01) was examined and was found to have the ArpA allele that is not normally detected in B2 strains.
 
 
 
-https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2797725/
+\input{./main/simstab}
 
-http://www.pnas.org/node/72945.full#T1
+We ran EzClermont on the 95 strains from Clermont 2015 and compared the results to the reported phylotype; 85 of the 95 strains classifications matched.  Of those that didn’t match, 4/10 failed to find a fragment that should be present, and 6/10 found at least one fragment that was not reported to be there (Table S3). To determine whether the inconsistent phylogroup assignments matched phylogeny, we then generated a parsimony tree using kSNP3, and plotted with ggtree\cite{Yu2017a}. This revealed that the EzClermont classification of ECOR46 (similar IAI39 and SMS-3-5) appears to match the true phylogeny, as opposed to the phylogroup reported in the literature (Figure \ref{fig:cladogram}).
 
-https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5471185/
 
-http://www.microbiologyresearch.org/docserver/fulltext/micro/162/11/1904_micro000367
+\input{./main/clades}
+
+
+Given the ease of use of the web app for simple queries, and the speed of execution for larger batches, we hope that EzClermont will be of use to the community.
