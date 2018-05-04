@@ -28,3 +28,6 @@ jobs:
           secure: "ZoiT/mVnVr4Sv0Y/2ghdQlpNz3S2frqeWfKI0e9W5gr4M52J4sqKiMym4DstR3yBRShmm2dxGE5v9S1xn3cg3sJj2P6VfnlPbL7NobkkBg9vG5/ny8AqM4sDhhmZW6iUebk2KC6hjceqJt5fAw/u5zmYAYv6xgdyIf0rW6oz8WxF7d8tkqdc4t1QNlHzu0PhT2VPECc/LNKsNI+glgwSlP74fQ8N6efJv3SrrwJIelmwPMHXFyzIvmswF/3M9rxwsXHxx6onmWf5Seb/q8ef48dJOvqc6cVZVSDqTc9zIc+K2YuZ5ijuYuViCtbhNeUUQhaLwTfnM814LtonMCrQrWH6na+dqL9s3RbSQrAwtmsTWFDURa2jUujBtJRuSjep4EcKLcam1RFX0ONnVFHb3B7Fot0XkgZKr7HDbfKpGhtC4s0p67SD7roWUD3UiGrK4F6emKXVdPuOv/mmk+bHyWwACx5TmIBJpDJX01XYiFJhW1ragCeZk/D+TIY9GPKLuHlXDVB94Ukhe8FZXFlNSzYRXa3gTh3FSthntHPDIZ7cLGhi6uQrKh6ps7Hm1DdWr8Uv+5GoMq8gvnoDCB/i8pJzJdiM2udHUPalwKEQhvpG/t6W440rEYMw7OKUJfEIY42vNpItGjQw5VcTq4Kn3+mIUjSRuk1Cn6lxlgoA+T0="
       on:
         tags: true
+stages:
+  allow_failures:
+    - deploy
