@@ -1,17 +1,19 @@
 # Building the training data
-In order to determine how much variability there is in the priming sites, we will download a pile of genomes, extract the regions of interest, and make alignments 
+In order to determine how much variability there is in the priming sites, we will download a pile of genomes, extract the regions of interest, and make alignments
 Get the genomes from
 https://www.ncbi.nlm.nih.gov/bioproject/PRJNA352562/
 
-Also grab the ones from 
+Also grab the ones from
 https://www.ncbi.nlm.nih.gov/bioproject/PRJNA352198/
 
 and also from PRJNA218110
 https://www.ncbi.nlm.nih.gov/bioproject/PRJNA218110/
 
+and PRJNA231221 (just the E. coli)
+https://www.ncbi.nlm.nih.gov/bioproject/PRJNA231221/
 
-
-Move them all into a folder called `combined`, because naming is important. Thats about 500 strains or so.  Now, to use the `extractRegions.py` script that I wrote, its easier if they are all in a single file.  Yes, its clunky, but it works.
+Move them all into a folder called `combined`, because naming is important. Thats about
+500 strains or so.  Now, to use the `extractRegions.py` script that I wrote, its easier if they are all in a single file.  Yes, its clunky, but it works.
 
 
 
@@ -47,9 +49,9 @@ We then use `simpleOrtho.py` to find the reciprocal best match of that locus in 
 for GENEF in refs/*.fasta
 do
   BN=$(basename $GENEF)
-  GENE=${GENE}.fastay  # double check this line; I forgot to single quote the log
-  REG=yjaA
-  echo yjaA
+  GENE=${BN%.fasta}  # double check this line; I forgot to single quote the log
+  REG=$GENE
+  echo $REG
   ~/GitHub/open_utils/orthoML/simpleOrtho.py $GENEF ./combined/ -n -v 1 -o ${REG}_out -t 4
   ~/GitHub/open_utils/extractRegion/extractRegion.py -l ./${REG}_out/simpleOrtho_regions.txt ./combined.fasta > ${REG}_regions.fasta
   mafft --thread 4 ./${REG}_regions.fasta > ${REG}_regions_aligned.fasta

@@ -11,11 +11,15 @@ Remember to pad the 0s in the metadata so things match up.
 The strains were unzipped and were then added to a `combined` directory, and EzClermont was run:
 
 ```
+ls ./docs/analysis/validate/combined/*.fa | parallel "ezclermont {} -p 1>> 2018-05-08_p.txt  2>> 2018-05-08_p.log"
+
+# or, without parallel
 for i in ./docs/analysis/data/combined/*.fna ;
 do
   echo "processing $i"
   clermontpcr $i 1>> 2018-04-30.txt 2>> 2018-04-30.log
 done
+
 ```
 
 # Generating kmer-base phylogentic tree
