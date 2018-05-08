@@ -1,5 +1,5 @@
-Strain,Class,phylogroup,Serotype,acc,In_clermont15,,,,,,
-K12-W3110,Commensal,A,O16,GCA_000010245.1,,CA_000010245.1_ASM1024v1_genomic,A,,,,
+Strain,Class,phylogroup,Serotype,assembly,In_clermont15,mcbi_accession_full,EzClermont,Notes,,,
+K12-W3110,Commensal,A,O16,GCA_000010245.1,,GCA_000010245.1_ASM1024v1_genomic,A,,,,
 K12-MG1655,Commensal,A,O16,GCA_000005845.2,yes,,,,,GCA_000010385.1_ASM1038v1_genomic,B1
 HS,Commensal,A,O9:H4,GCA_000017765.1,yes,,,,,GCA_000010745.1_ASM1074v1_genomic,B1
 K12-BW2952,Commensal,A,O16,GCA_000022345.1,,GCA_000022345.1_ASM2234v1_genomic,A,,,GCA_000010765.1_ASM1076v1_genomic,B1
@@ -26,6 +26,6 @@ IAI39,Extracellular pathogenic E. coli,D,O7:K1,GCA_000026345.1,,GCA_000026345.1_
 SMS-3-5,Extracellular pathogenic E. coli,D,O19:H34,GCA_000019645.1,,GCA_000019645.1_ASM1964v1_genomic,F,"cant find arpA-R, cant find tspBA",http://www.microbiologyresearch.org/docserver/fulltext/micro/162/11/1904_micro000367.pdf?expires=1524820159&id=id&accname=guest&checksum=49F954120E7E44E9616139090A887C18,,
 EDL933,EHEC,E,O157:H7,GCA_000732965.1,,GCA_000732965.1_ASM73296v1_genomic,E,,,,
 TW14359,EHEC,E,O157:H7,GCA_000022225.1,,GCA_000022225.1_ASM2222v1_genomic,E,,,,
-Sakai,EHEC,E,O157:H7,,,,,,,,
+Sakai,EHEC,E,O157:H7,,yes,,,,,,
 EC4115,EHEC,E,O157:H7,GCA_000021125.1,,GCA_000021125.1_ASM2112v1_genomic,E,,,,
-B4 Sb227,Shigella,S,OB4,,,,,,,,
+B4 Sb227,Shigella,S,OB4,,,,,Not E coli,,,
