@@ -71,8 +71,7 @@ def index():
                 results, profile  = runcler(
                     contigsfile=tmpfile,
                     #ignore_control=request.form.get('allowcontrolfails'),
-                    ignore_control=False,
-                    partial=request.form.get('allowpartial')
+                    # partial=request.form.get('allowpartial')
                 )
             else:
                 results = "Unable to read file.  Are you sure its a valid fasta?"
@@ -91,10 +90,10 @@ def index():
     else:
         return render_template("alt.html")
 
-def runcler(contigsfile, ignore_control=False, partial=False):
+def runcler(contigsfile):
     # prepare args
     args = Namespace(contigs=contigsfile,
-                     ignore_control=ignore_control, partial=partial)
+                     no_partial=False, min_length=500)
     try:
         results, profile  = clermontpcr.main(args)
     except Exception as e:
