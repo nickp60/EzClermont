@@ -115,8 +115,8 @@ class clermontTestCase(unittest.TestCase):
             args = argparse.Namespace(
                 contigs=os.path.join(os.path.dirname(__file__),
                                      "refs", ref[1] + ".fasta"),
-                partial=False,
-                ignore_control=False)
+                no_partial=False,
+                min_length=500)
             result, profile = clp.main(args)
             self.assertEqual(
                 ref[0], result)
@@ -126,8 +126,8 @@ class clermontTestCase(unittest.TestCase):
         args = argparse.Namespace(
             contigs=os.path.join(os.path.dirname(__file__),
                                  "refs", Crypt_ref[1] + ".fasta"),
-            partial=False,
-            ignore_control=False)
+            no_partial=False,
+            min_length=500)
         result, profile  = clp.main(args)
         self.assertEqual(result, "U/cryptic")
 

@@ -50,7 +50,6 @@ class PcrHit(object):
             self.true_hit = True
         elif (self.F_hit or self.R_hit) and self.allow_partial:
             self.true_hit = True
-        # elif (self.F_hit or self.R_hit):
         else:
             self.true_hit = False
 
@@ -63,19 +62,22 @@ def get_args():  # pragma: no cover
                         help="FASTA formatted genome or set of contigs")
 
     optional = parser.add_argument_group('optional arguments')
-    optional.add_argument("-p", "--partial", dest='partial',
+    optional.add_argument("-m", "--min_length", dest='min_length',
+                          help="minimum contig length to consider." +
+                          "default: %(default)s",
+                          default=500)
+    optional.add_argument("-n", "--no_partial", dest='no_partial',
                           action="store_true",
                           help="If scanning contigs, breaks between " +
                           "contigs could potentially contain your " +
-                          "sequence of interest.  if --partial, partial " +
+                          "sequence of interest.  if --np_partial, partial " +
                           "matches that could be intereupted by contig " +
-                          "breaks are reported",
+                          "breaks are reported; default " +
+                          "behaviour is to consider partial hits if the " +
+                          "sequence is an assembly of more than 4 sequences" +
+                          "(ie, no partial matches for complete genomes, " +
+                          "allowing for 1 chromasome and several plasmids)",
                           default=False)
-    optional.add_argument("-c", "--ignore_control", dest='ignore_control',
-                          action="store_true",
-                          help="if control PCR fails, continue",
-                          default=False)
-    # had to make this explicitly to call it a faux optional arg
     optional.add_argument("-h", "--help",
                           action="help", default=argparse.SUPPRESS,
                           help="Displays this help message")
@@ -154,17 +156,17 @@ def get_matches(allele, seq_list, fwd_primer, rev_primer, expected_size,
         coords_R = None
         try:
             coords_F = fwd.search(str(i.seq)).span()
-            sys.stderr.write("F match! on %s \n" % i.id)
+            sys.stderr.write("  F match! on %s \n" % i.id)
         except:
             pass
         try:
             coords_R = rev.search(str(i.seq)).span()
-            sys.stderr.write("R match! on %s \n" % i.id)
+            sys.stderr.write("  R match! on %s \n" % i.id)
         except:
             pass
 
         if coords_F is not None and coords_R is not None:
-            sys.stderr.write("Match found on %s (%s)\n" % (i.id, strand))
+            sys.stderr.write("  Match found on %s (%s)\n" % (i.id, strand))
             if abs(coords_R[1] - coords_F[0] - expected_size) < 20:
                 matches.append(PcrHit(
                     allele_name=allele,
@@ -178,11 +180,14 @@ def get_matches(allele, seq_list, fwd_primer, rev_primer, expected_size,
                 ))
             else:
                 sys.stderr.write(
-                    "Match found, but it is %ibp and it should only be %i\n" %
+                    "  Match found, but it is %ibp and it should only be %i\n" %
                     (coords_R[1] - coords_F[0], expected_size))
         elif coords_F is not None:
-            if len(i.seq[coords_F[0]:]) > expected_size:
-                sys.stderr.write("Possible match on %s (%s)\n" % (i.id, strand))
+            if (
+                    (strand == "+" and len(i.seq) - coords_F[0] < expected_size) or
+                    (strand == "-" and coords_F[0] < expected_size)
+            ):
+                sys.stderr.write("  Possible match on %s (%s) %d\n" % (i.id, strand, coords_F[0]))
                 matches.append(PcrHit(
                     allele_name=allele,
                     template_orientation=strand,
@@ -193,11 +198,16 @@ def get_matches(allele, seq_list, fwd_primer, rev_primer, expected_size,
                     R_end=None,
                     allow_partial=allow_partial
                 ))
+
             else:
+                sys.stderr.write("  Only forward primer hit found\n")
                 pass
         elif coords_R is not None:
-            if not coords_R[0] < expected_size:
-                sys.stderr.write("Possible match on %s (%s)\n" % (i.id, strand))
+            if (
+                    (strand == "+" and len(i.seq) - coords_R[0] < expected_size) or
+                    (strand == "-" and coords_R[0] < expected_size)
+            ):
+                sys.stderr.write("  Possible match on %s (%s)\n" % (i.id, strand))
                 matches.append(PcrHit(
                     allele_name=allele,
                     template_orientation=strand,
@@ -208,46 +218,13 @@ def get_matches(allele, seq_list, fwd_primer, rev_primer, expected_size,
                     F_end=None,
                     allow_partial=allow_partial
                 ))
+                sys.stderr.write("  Possible match on %s (%s) %d\n" % (i.id, strand, coords_R[0]))
+            else:
+                sys.stderr.write("  Only reverse primer hit found\n")
         else:
             # sys.stderr.write("No hits on %s" % i.id)
             pass
     return(matches)
-
-
-def old_interpret_hits(arpA, chu, TspE4, yjaA):
-    if arpA:
-        if chu:
-            if TspE4 and yjaA:
-                result = "U"
-            elif not TspE4 and not yjaA:
-                result = "D/E"
-            elif TspE4:
-                result = "D/E"
-            else:
-                assert yjaA, "error interpretting results!"
-                result = "E/cryptic"
-        else:
-            if TspE4 and yjaA:
-                result = "U"
-            elif not TspE4 and not yjaA:
-                result = "A"
-            elif TspE4:
-                result = "B1"
-            else:
-                assert yjaA, "error interpretting results"
-                result = "A/C"
-    else:
-        if chu:
-            if yjaA or TspE4:
-                result = "B2"
-            else:
-                result = "F"
-        else:
-            if yjaA:
-                result = "cryptic"
-            else:
-                result = "U"
-    return(result)
 
 
 def interpret_hits(arpA, chu, yjaA, TspE4):
@@ -386,11 +363,12 @@ def main(args=None):
     yjaA_2b = "AAT[GA]CGTTCCTCAACCTGTG"
     # TspE4.C2
     # TspE4_C2 = "CACTATTCGTAAGGTCATC[CG]"
-    TspE4C2_1b =   "CACTATTCGTAAGGTCATCC"
+    TspE4C2_1b =   "CACTATTCGTAAGG[TC]CATCC"
     TspE4C2_2b = "AGTTTATCGCTGCGGGTCGC"
     # arpA
     AceK_f =  "AA[CT]GC[TC]ATTCGCCAGCTTGC"
     ArpA1_r = "TCTCC[CA]CATA[CT][CA]G[TC]ACGCTA"
+    # ArpA1_r = "TCTCCCCATACCGTACGCTA"
     #################################
     # arpA, for group e
     ArpAgpE_f = "GAT[GT]CCAT[CT]TTGTC[AG]AAATATGCC"
@@ -414,8 +392,24 @@ def main(args=None):
     controls = {"trpBA_control": [trpBA_f, trpBA_r, 489]}
     sys.stderr.write("Reading in sequence(s) from %s\n" %
                      os.path.basename(args.contigs))
+    seqs = []
+    rejected_contigs = 0
     with open(args.contigs, 'r') as fasta:
-        seqs = list(SeqIO.parse(fasta, 'fasta'))
+        for seq in SeqIO.parse(fasta,"fasta"):
+            if len(seq.seq) > args.min_length:
+                seqs.append(seq)
+            else:
+                rejected_contigs = rejected_contigs + 1
+    if rejected_contigs > 0:
+        sys.stderr.write(str(
+            "Ignoring %d contigs less than the set " +
+            "minimum contig length (%d)\n") %
+                         (rejected_contigs, args.min_length))
+    allow_partial = False
+    if len(seqs) > 4 and not args.no_partial:
+        allow_partial = True
+    else:
+        sys.stderr.write("rejecting potetial partial matches\n")
 
     # Start with the Control primers before trying anything else
     # these are used primarily for differentiating the C/E groups
@@ -423,7 +417,7 @@ def main(args=None):
     controls["trpBA_control"], report_string = run_primer_pair(
         seqs=seqs, allele="trpBA_control",
         vals=controls["trpBA_control"],
-        allow_partial=args.partial)
+        allow_partial=allow_partial)
     sys.stderr.write(report_string + "\n")
     EC_control_fail = False
     if not controls["trpBA_control"][3]:
@@ -448,7 +442,7 @@ def main(args=None):
         quad_primers[key], report_string = run_primer_pair(
             seqs=seqs, allele=key,
             vals=val,
-            allow_partial=args.partial)
+            allow_partial=allow_partial)
         profile = profile + report_string + "\n"
     sys.stderr.write("\n-------- Results --------\n")
     sys.stderr.write(profile)
@@ -471,7 +465,7 @@ def main(args=None):
             c_primers=c_primers,
             e_primers=e_primers,
             cryptic_chu_primers=cryptic_chu_primers,
-            allow_partial=args.partial,
+            allow_partial=allow_partial,
             EC_control_fail=EC_control_fail,
             seqs=seqs)
     sys.stderr.write("Clermont type: %s\n" % Clermont_type)

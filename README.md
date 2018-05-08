@@ -9,6 +9,7 @@
 This is a tool for using the Clermont 2013 PCR typing method for *in silico* analysis of *E. coli* whole genomes or assembled contigs.
 
 ### Changelog
+ - bump to version 0.4 in May 2018; improved handling of partial matches
  - made a webapp on April 19th, 2018 after requests from several to make the tool more user friendly.
  - updated on August 2, 2017 to add reactions that differentiate A/C, D/E/cryptic, and to add more robust tests.
  - released Dec. 2016
@@ -26,12 +27,17 @@ positional arguments:
   contigs           FASTA formatted genome or set of contigs
 
 optional arguments:
-  -p, --partial     If scanning contigs, breaks between contigs could
-                    potentially contain your sequence of interest. if
-                    --partial, partial matches that could be intereupted by
-                    contig breaks are reported
-  -c, --no_control  ignore failure of control PCR
-  -h, --help        Displays this help message
+  -m MIN_LENGTH, --min_length MIN_LENGTH
+                        minimum contig length to consider.default: 500
+  -n, --no_partial      If scanning contigs, breaks between contigs could
+                        potentially contain your sequence of interest. if
+                        --np_partial, partial matches that could be
+                        intereupted by contig breaks are reported; default
+                        behaviour is to consider partial hits if the sequence
+                        is an assembly of more than 4 sequences(ie, no partial
+                        matches for complete genomes, allowing for 1
+                        chromasome and several plasmids)
+  -h, --help            Displays this help message
 ```
 
 
@@ -44,6 +50,10 @@ for i in strain1 strain2 strain3;
 	do
 	  ezclermont ${i} >> results.txt
 done
+```
+or, using GNU parallel, and saving a log file:
+```
+ls ./folder/with/assemblies/*.fa | parallel "ezclermont {} 1>> results.txt  2>> results.log"
 ```
 
 
