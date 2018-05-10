@@ -70,11 +70,11 @@ def get_args():  # pragma: no cover
                           action="store_true",
                           help="If scanning contigs, breaks between " +
                           "contigs could potentially contain your " +
-                          "sequence of interest.  if --np_partial, partial " +
-                          "matches that could be intereupted by contig " +
-                          "breaks are reported; default " +
+                          "sequence of interest.  if --no_partial, " +
+                          "these plausible partial matches will NOT be " +
+                          "reported; default " +
                           "behaviour is to consider partial hits if the " +
-                          "sequence is an assembly of more than 4 sequences" +
+                          "assembly has more than 4 sequnces" +
                           "(ie, no partial matches for complete genomes, " +
                           "allowing for 1 chromasome and several plasmids)",
                           default=False)
