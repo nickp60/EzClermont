@@ -7,7 +7,7 @@ metadata <- read.csv("validate/metadata_clermont15.csv", stringsAsFactors = F)
 metadata$short_acc <- gsub("(.*)(\\.\\d)", "\\1", metadata$genbank_acc) 
 
 expdata <- read.csv("validate/2018-04-30.txt", sep="\t", col.names = c("long_acc", "exp_group"), stringsAsFactors = F, header=F)
-expdata <- read.csv("../../2018-05-08.txt", sep="\t", col.names = c("long_acc", "exp_group"), stringsAsFactors = F, header=F)
+expdata <- read.csv("./validate/2018-05-10.txt", sep="\t", col.names = c("long_acc", "exp_group"), stringsAsFactors = F, header=F)
 expdata$acc <- gsub("(GCA_.*?\\.\\d)_(.*)","\\1", expdata$long_acc)
 
 keyfile <- read.csv("validate/accession_name.txt", sep="\t", col.names = c("long_acc", "ecor"), stringsAsFactors = F, header=F)
@@ -34,7 +34,7 @@ table(dat$match)
 
 #View(dat[,c("acc", "ecor", "quardiplex_pcr_base", "exp_group", "match")])
 
-write.table(file = "~/Desktop/matches.txt", dat[,c("acc", "ecor", "quardiplex_pcr_base", "exp_group", "match")])
+write.table(file = file.path(".", "matched_results.txt"), dat[,c("acc", "ecor", "quardiplex_pcr_base", "exp_group", "match")])
 
 ## try http:// if https:// URLs are not supported
 #source("https://bioconductor.org/biocLite.R")
@@ -78,7 +78,7 @@ colors = c(A="grey", B1="darkgreen", B2="purple",   C="orange", "Clade I"="yello
     scale_size_area(guide=F)  +
     scale_shape_discrete(guide=F) +
     labs(title="", color="Phylogroup" ) +
-    guides(colour = guide_legend(override.aes = list(size=10)))
+    guides(colour = guide_legend(override.aes = list(size=3))) +
     # 
     # labs(title="Parsimony cladogram of strains from Clermont, et al 2015", color="Phylogroup", subtitle="Tree generated with kSNP3 (k=19). Enlarged circular tips show where EzClermont \ndiffered from reported phylogroup (EzClermont type show in brackets)." ) +
     theme(legend.position="right") 

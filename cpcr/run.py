@@ -357,26 +357,23 @@ def main(args=None):
     ####### Quadriplex PCR ########
     # chuA
     chuA_1b = "ATGGTACCGGACGAACCAAC"
-    chuA_2  = "TGCC[GA]CCAGTACCAAAGACA"
+    chuA_2  = "T[GA]CC[GA]CCAGT[AG]CCAAAGACA"
     # yjaH
     yjaA_1b = "CAAACGTGAAGTGTCAGGAG"
     yjaA_2b = "AAT[GA]CGTTCCTCAACCTGTG"
     # TspE4.C2
-    # TspE4_C2 = "CACTATTCGTAAGGTCATC[CG]"
-    TspE4C2_1b =   "CACTATTCGTAAGG[TC]CATCC"
+    TspE4C2_1b = "CACTATTCGTAAG[GA][TC]CATCC"
     TspE4C2_2b = "AGTTTATCGCTGCGGGTCGC"
     # arpA
     AceK_f =  "AA[CT]GC[TC]ATTCGCCAGCTTGC"
     ArpA1_r = "TCTCC[CA]CATA[CT][CA]G[TC]ACGCTA"
-    # ArpA1_r = "TCTCCCCATACCGTACGCTA"
     #################################
     # arpA, for group e
     ArpAgpE_f = "GAT[GT]CCAT[CT]TTGTC[AG]AAATATGCC"
     ArpAgpE_r = "GAAAA[GT]AAAAAGA[AC]TT[CT][CAT]CAAGAG"
     # trpA, for group c
-    trpAgpC_1 = "AGTTTTATGCC[CG]A[GA]TGCGAG"
-    trpAgpC_2 = "TC[TA]GC[GT]C[CT]GGTCACGCCC"
-    # trpAgpC_2 = "TC[TA]GC[GT]C[CT]GGTCA[CT][GA]CC[CT]"
+    trpAgpC_1 = "AGTTTTA[TC]GC[CG][CG]A[GA]TGCGAG"
+    trpAgpC_2 = "TC[TCA]GC[GAT]CC[GC]GTCACGCCC"
     # trpA, for control
     trpBA_f = "CGGCGATAAAGACAT[CT]TTCAC"
     trpBA_r = "GCAACGCGGC[CT]TGGCGGAAG"

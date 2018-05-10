@@ -13,7 +13,7 @@ and PRJNA231221 (just the E. coli)
 https://www.ncbi.nlm.nih.gov/bioproject/PRJNA231221/
 
 Move them all into a folder called `combined`, because naming is important. Thats about
-500 strains or so.  Now, to use the `extractRegions.py` script that I wrote, its easier if they are all in a single file.  Yes, its clunky, but it works.
+544 strains.  Now, to use the `extractRegions.py` script that I wrote, its easier if they are all in a single file.  Yes, its clunky, but it works.
 
 
 
@@ -46,18 +46,7 @@ Now,for each of the gene fasta files, find the primer site, and trim the sequenc
 #  Extracting the relevant regions
 We then use `simpleOrtho.py` to find the reciprocal best match of that locus in each of the genomes.  For each gene, we run `simpleOrtho.py`, use `extractRegion.py` to get a fasta sequence of that reciprocal match, and once all those have been found, we generate a multiple sequence alignment with mafft using default parameters:
 ```
-for GENEF in refs/*.fasta
-do
-  BN=$(basename $GENEF)
-  GENE=${BN%.fasta}  # double check this line; I forgot to single quote the log
-  REG=$GENE
-  echo $REG
-  ~/GitHub/open_utils/orthoML/simpleOrtho.py $GENEF ./combined/ -n -v 1 -o ${REG}_out -t 4
-  ~/GitHub/open_utils/extractRegion/extractRegion.py -l ./${REG}_out/simpleOrtho_regions.txt ./combined.fasta > ${REG}_regions.fasta
-  mafft --thread 4 ./${REG}_regions.fasta > ${REG}_regions_aligned.fasta
-  rm ${REG}_out -rf
-done
-
+# see the extract_amplicons.sh script
 ```
 
 # Incorporating mismatches
