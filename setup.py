@@ -32,6 +32,11 @@ if sys.version_info <= (3, 0):
                      "or above...exiting.\n")
     sys.exit(1)
 
+## parse requirements file
+install_reqs = parse_requirements("requirements.txt",
+                                  session=False)
+requirements = [str(ir.req) for ir in install_reqs]
+
 setup(
     name='ezclermont',
     version=verstr,
@@ -49,7 +54,8 @@ setup(
     author='Nick Waters',
     author_email='nickp60@gmail.com',
     license='MIT',
-
+    # handle requirments
+    install_requires=requirements,
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         'Development Status :: 3 - Alpha',
