@@ -93,6 +93,7 @@ def index():
 def runcler(contigsfile):
     # prepare args
     args = Namespace(contigs=contigsfile,
+                     experiment_name=None,
                      no_partial=False, min_length=500)
     try:
         results, profile  = clermontpcr.main(args)

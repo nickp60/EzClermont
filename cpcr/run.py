@@ -66,6 +66,9 @@ def get_args():  # pragma: no cover
                           help="minimum contig length to consider." +
                           "default: %(default)s",
                           default=500)
+    optional.add_argument("-e", "--experiment_name", dest='experiment_name',
+                          help="name of experiment; defaults to file name " +
+                          "without extension.")
     optional.add_argument("-n", "--no_partial", dest='no_partial',
                           action="store_true",
                           help="If scanning contigs, breaks between " +
@@ -468,9 +471,13 @@ def main(args=None):
     sys.stderr.write("Clermont type: %s\n" % Clermont_type)
     sys.stderr.write("-------------------------\n")
     # This should be the only thing being written to stdout
+    if args.experiment_name is None:
+        expname = os.path.splitext(os.path.basename(args.contigs))[0]
+    else:
+        expname = args.experiment_name
     sys.stdout.write(
         "{0}\t{1}\n".format(
-            os.path.splitext(os.path.basename(args.contigs))[0],
+            expname,
             Clermont_type
         ))
     return(Clermont_type, profile)

@@ -115,6 +115,7 @@ class clermontTestCase(unittest.TestCase):
             args = argparse.Namespace(
                 contigs=os.path.join(os.path.dirname(__file__),
                                      "refs", ref[1] + ".fasta"),
+                experiment_name=None,
                 no_partial=False,
                 min_length=500)
             result, profile = clp.main(args)
@@ -126,6 +127,7 @@ class clermontTestCase(unittest.TestCase):
         args = argparse.Namespace(
             contigs=os.path.join(os.path.dirname(__file__),
                                  "refs", Crypt_ref[1] + ".fasta"),
+            experiment_name=None,
             no_partial=False,
             min_length=500)
         result, profile  = clp.main(args)
