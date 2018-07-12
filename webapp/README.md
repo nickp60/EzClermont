@@ -1,26 +1,24 @@
-# minimal-flask-example
-The simplest complex example that I can think of to show main Flask app concepts.
+# Running the EzClermont Webapp
 
-# example 1
+## Docker
 
-The first example is `app.py`. In this example, I show you how to embed a `pandas.DataFrame()` table inside an HTML page served up using Flask.
+Create the docker image:
 
-Key concepts here:
+```
+cd /path/to/ezclermont/webapp/
+docker build -t ezclermont .
+docker run docker run -p 5000:5000 ezclermont
+```
 
-- Jinja2 templating: (`{{ variable_name }}` syntax)
-- Template inheritance: (`{% extends "parent.html" %}`)
-- Styling with Bootstrap CSS
-- Marking strings as safe to render: (`{{ string|safe }}`)
 
-# example 2
+### Virtualenv
 
-The second example is `display_bokeh.py`. In this example, I show you how to embed a Bokeh plot on an HTML page served up using Flask.
+run within a python virtual 
+```
+venv ~/ezenv/ -p python3
+source ~/ezenv/bin/activate
+pip install flask ezclermont biopython
+cd /path/to/ezclermont/webapp/
+python clermontwebapp.py
 
-Key concepts here:
-
-- Marking strings as safe to render (see above)
-- Refactoring granular logic into a utility function, so that only application "business logic" remains.
-
-# notes
-
-- Watch out for BokehJS, BokehCSS and Bokeh.py versioning. Make sure the Bokeh versions in `data.html` are the same as the Bokeh version installed locally.
+```
