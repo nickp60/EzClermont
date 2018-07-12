@@ -108,4 +108,4 @@ def runcler(contigsfile):
     return (results, profile)
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5957)
+    app.run(debug=True, host="0.0.0.0")
