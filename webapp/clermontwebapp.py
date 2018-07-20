@@ -34,9 +34,17 @@ def is_fasta(filename):
     """ verbatim from https://stackoverflow.com/questions/44293407/
     works because SeqIO returns an empty generator rather than an error
     """
-    with open(filename, "r") as handle:
-        fasta = SeqIO.parse(handle, "fasta")
-        return any(fasta)  # False when `fasta` is empty, i.e. wasn't a FASTA file
+    if os.path.splitext(filename)[1] not in \
+       ['.fasta', '.fas', '.fa', '.fna', '.fsa_nt']:
+        return False
+    try:
+        with open(filename, "r") as handle:
+            fasta = SeqIO.parse(handle, "fasta")
+            return any(fasta)  # False when `fasta` is empty, i.e. wasn't a FASTA file
+    except:
+        # this is likely a UnicodeDecodeError if its not a text file,
+        # but we cant be too careful with all the scamps out there
+        return False
 
 
 @app.route("/", methods=['GET','POST'])
@@ -57,7 +65,11 @@ def index():
             tmpfile = get_tmpfile_path()
             file.save(tmpfile)
             with open(tmpfile) as f:
-                file_content = f.read().split("\n")
+                if is_fasta(tmpfile):
+                    file_content = f.read().split("\n")
+                else:
+                    results = "Unable to read file.  Are you sure its a valid fasta?"
+                    profile = ""
             teaser = "\n".join(file_content[0:7])
             addn_lines = len(file_content) - 7
             if addn_lines < 0:
@@ -108,4 +120,4 @@ def runcler(contigsfile):
     return (results, profile)
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=False, host="0.0.0.0")

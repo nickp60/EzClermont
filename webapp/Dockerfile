@@ -11,6 +11,7 @@ RUN conda update -y conda
 COPY . /app
 WORKDIR /app
 RUN pip install -r requirements.txt
+RUN pip install gunicorn
 RUN pip install ezclermont
-ENTRYPOINT ["python"]
-CMD ["clermontwebapp.py"]
+# ENTRYPOINT ["gunicorn"]
+CMD ["gunicorn clermontwebapp:app"]
