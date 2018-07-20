@@ -2,18 +2,23 @@
 
 ## Docker
 
-Create the docker image:
+### Create the docker image:
 
 ```
 cd /path/to/ezclermont/webapp/
 docker build -t ezclermont .
-docker run docker run -p 5000:5000 ezclermont
+docker run -p 5000:5000 ezclermont
 ```
 
+### Use the docker image:
+
+```
+docker pull nickp60/ezclermont
+```
 
 ### Virtualenv
 
-run within a python virtual 
+run within a python virtualenv
 ```
 venv ~/ezenv/ -p python3
 source ~/ezenv/bin/activate
