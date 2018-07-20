@@ -8,9 +8,9 @@ RUN bash Miniconda3-latest-Linux-x86_64.sh -b -p /miniconda3/
 RUN rm Miniconda3-latest-Linux-x86_64.sh
 ENV PATH=/miniconda3/bin:${PATH}
 RUN conda update -y conda
-COPY . /app
-WORKDIR /app
+COPY . /
+WORKDIR /
 RUN pip install -r requirements.txt
 RUN pip install gunicorn
 RUN pip install ezclermont
-ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:8000", "app.clermontwebapp:app"]
+ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:8000", "clermontwebapp:app"]
