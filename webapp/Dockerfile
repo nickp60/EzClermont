@@ -13,4 +13,4 @@ WORKDIR /
 RUN pip install -r requirements.txt
 RUN pip install gunicorn
 RUN pip install ezclermont
-ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:8000", "clermontwebapp:app"]
+ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:5000", "clermontwebapp:app"]
