@@ -42,6 +42,9 @@ class PcrHit(object):
         self.parse_hits()
 
     def parse_hits(self):
+        """ determine if both forward and back hits have been found
+        If both, we call it a true hit
+        """
         if self.F_start is not None and self.F_end is not None:
             self.F_hit = True
         if self.R_start is not None and self.R_end is not None:
@@ -57,7 +60,7 @@ class PcrHit(object):
 def get_args():  # pragma: no cover
     parser = argparse.ArgumentParser(
         description="run a 'PCR' to get clermont types",
-        add_help=False)  # to allow for custom help
+        add_help=False)
     parser.add_argument("contigs", action="store",
                         help="FASTA formatted genome or set of contigs")
 
@@ -141,10 +144,8 @@ def ambig_rc(rev_primer, verbose=False):
 
 def get_matches(allele, seq_list, fwd_primer, rev_primer, expected_size,
                 allow_partial=False, strand="+"):
-    """given a seqence list  and regex compilations of your primers
-    return the matches
+    """ return a list of PCRhits for a given list of sequences and a primer
     """
-    # assert logger is not None, "must use logger!"
     assert strand in ["-", "+"], "strand must be either + or -"
     assert isinstance(seq_list[0], SeqRecord), "must submit list of SeqRecords"
     if strand == "+":
@@ -231,6 +232,8 @@ def get_matches(allele, seq_list, fwd_primer, rev_primer, expected_size,
 
 
 def interpret_hits(arpA, chu, yjaA, TspE4):
+    """ Given boolian int values for these alleles, call basic clermont type
+    """
     # {result: [[arpA,chuA, yjaA, TspE4.C2],
     #           [arpA,chuA, yjaA, TspE4.C2]], etc},
     # also, screw pep8 spacing, I need this to look pretty
@@ -265,7 +268,9 @@ def interpret_hits(arpA, chu, yjaA, TspE4):
 
 def refine_hits(hit, c_primers, e_primers, cryptic_chu_primers, EC_control_fail,
                 allow_partial, seqs):
-
+    """ Given the basic clermont type, refine if needed
+    run additional primer sets to differentiate groups
+    """
     if hit == "D/E":
         sys.stderr.write("Clermont type is D/E; running ArpAgpE primers\n")
         e_primers["arpA_e"], report_string = run_primer_pair(
@@ -424,16 +429,6 @@ def main(args=None):
         sys.stderr.write(
                 "No matches found for control PCR, but continuing analysis\n")
         EC_control_fail = True
-    #     else:
-    #         sys.stderr.write("No matches found for control PCR.  Exiting\n")
-    #         sys.stdout.write(
-    #             "{0}\t{1}\n".format(
-    #                 os.path.splitext(os.path.basename(args.contigs))[0],
-    #                 "control_fail"
-    #             ))
-    #         raise ValueError("Control (trpBA) failed")
-    # else:
-    #     pass
     # run Clermont Typing
     sys.stderr.write("Running Quadriplex PCR\n")
     profile = ""

@@ -20,13 +20,6 @@ app.secret_key = os.urandom(24)
 app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
 
 
-def default_stream_factory(total_content_length, filename, content_type, content_length=None):
-    """The stream factory that is used per default."""
-    # if total_content_length > 1024 * 500:
-    #    return TemporaryFile('wb+')
-    # return BytesIO()
-    return TemporaryFile('wb+')
-
 def get_tmpfile_path():
     return os.path.join(tempfile.gettempdir(), "tmp.fasta")
 

@@ -18,6 +18,9 @@ class clermontTestCase(unittest.TestCase):
     """
     """
     def test_interpret(self):
+        """ Ensure that the decision tree for parsing the 4 primer sets works right
+        See the clermont 2013 paper
+        """
 
         ref = ['A', 'A/C', 'B1', 'A/C', 'D/E', 'D/E', 'E/cryptic', 'D/E',
                'D/E', 'F', 'B2', 'B2', 'B2', 'cryptic', 'E/cryptic', 'U/cryptic']
@@ -69,6 +72,8 @@ class clermontTestCase(unittest.TestCase):
         self.assertEqual(ref, test)
 
     def test_get_matches(self):
+        """ test creation of PCRhit object from two string matches
+        """
         test_seq = [SeqRecord(
             Seq("GCACAGTCGATCAAAATTTTTGCAGTCGACTGGACTGACTGTCGGATCTCAGTCAT"))]
         test_fwd = "GCACAG"
@@ -91,6 +96,8 @@ class clermontTestCase(unittest.TestCase):
         pass
 
     def test_ambig_rc(self):
+        """ test that we accurately are getting the reverse compliment of ambigous bases
+        """
         res1 = clp.ambig_rc("[AT]ATCACTACTACTA[CA]TC", verbose=True)
         self.assertEqual(res1, "GA[TG]TAGTAGTAGTGAT[AT]")
         res2 = clp.ambig_rc("[AT]ATCACTAC[TACT]A[CA]TC", verbose=True)
@@ -99,6 +106,9 @@ class clermontTestCase(unittest.TestCase):
         self.assertEqual(res3, "[GA][TG]T[AGTA]GTAGTGAT[AT]")
 
     def test_integration(self):
+        """ execute ezclermont on connonical clermonted genome sequences
+        These were selected from a lit review (primarily from clermont2013
+        """
         A_ref = ["A", "NC_010468.1"]
         B1_ref = ["B1", "NC_011741.1"]
         E1_ref = ["E", "BA000007.2"]
@@ -133,15 +143,6 @@ class clermontTestCase(unittest.TestCase):
         result, profile  = clp.main(args)
         self.assertEqual(result, "U/cryptic")
 
-    # def test_integration_cladeV(self):
-    #     Crypt_ref = ["Cryptic", "ADKG01.1"]
-    #     args = argparse.Namespace(
-    #         contigs=os.path.join(os.path.dirname(__file__),
-    #                              "refs", Crypt_ref[1] + ".fasta"),
-    #         partial=False,
-    #         ignore_control=False)
-    #     result, profile  = clp.main(args)
-    #     self.assertEqual(result, "cryptic")
 
 if __name__ == "__main__":
     unittest.main()
