@@ -7,8 +7,9 @@ from argparse import Namespace
 from Bio import SeqIO
 
 from cpcr import run as clermontpcr
+from cpcr import _version
 # check that the import works
-print(clermontpcr.PcrHit)
+print("Running ezclermont version", _version.__version__)
 
 app = Flask(__name__)
 # app.secret_key = 'crytographyisnotmystrongsuit'
@@ -44,15 +45,14 @@ def index():
     session["FINISHED"] = False
     session["LOADED"] = False
     file_content = [""]
-    # return render_template("template.html", content=content) #
     if request.method == 'POST':
-        print(request.form['submit'])
-        if request.form['submit'] == "Get Clermont Phylotype!" :
+        # print(request.form.__dict__)
+        if request.form['submitupload'] == "Get Clermont Phylotype!" :
             # for secure filenames. Read the documentation.
             file = request.files['myfile']
             filename = secure_filename(file.filename)
             tmpdir = tempfile.gettempdir()
-            print(tmpdir)
+            # print(tmpdir)
             # tmpfile = os.path.join(tmpdir, filename)
             tmpfile = get_tmpfile_path()
             file.save(tmpfile)
@@ -78,7 +78,7 @@ def index():
                 profile = ""
             ###
             return render_template(
-                'alt.html',
+                'index.html',
                 header=header,
                 content=teaser,
                 results=results,
@@ -88,7 +88,7 @@ def index():
         else:
             pass
     else:
-        return render_template("alt.html")
+        return render_template("index.html")
 
 def runcler(contigsfile):
     # prepare args

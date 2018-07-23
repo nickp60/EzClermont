@@ -1,5 +1,51 @@
 {% extends "layout.html" %}
 {% block body %}
-<p>The table has {{ length }} rows.</p>
-{{ dataframe|safe }}
+  <!-- Primary Page Layout –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+<div class="container">
+  <div class="row">
+    <div class="eight columns" style="margin-top: 20%">
+      <h4><i>In Silico</i> Clermont Phylotyper</h4>
+      <p>Easily find the Clermont 2013 phylotypes of your <i>E. coli</i> strains. Simply upload your contigs as a FASTA file, and get results in seconds. </p>
+    </div>
+    <div class="four columns columns" style="margin-top: 20%">
+      <a href="https://github.com/nickp60/clermontpcr" target="_blank">
+	<img src="{{url_for('static', filename='clermontPCR.png')}}"
+	     style='width:100%;' border="0" alt="Null">
+      </a>
+    </div>
+  </div>
+  <!-- Input Buttons -->
+  <div class="row">
+    <form action="" method="POST" enctype="multipart/form-data">
+      <b>1:</b>&emsp;<input type="file" name="myfile"><br>
+      <!-- <b>2:</b>&emsp;Allow Partial Matches: <input type="checkbox" name="allowpartial" unchecked><br> -->
+      <b>2:</b>&emsp;<input type="submit" name="submitupload" value="Get Clermont Phylotype!" >
+
+    </form>
+  </div>
+
+  <!-- Download Button -->
+  <div class="row"  style='color:darkgray'>
+    <pre>{{ content }}</pre>
+    <pre>{{ nlines }}</pre>
+  </div>
+  {% if session['LOADED'] %}
+    <div class="row"  style='color:black'>
+      <h5>Profile:</h5>
+      <pre>{{ profile }}</pre>
+      <h4>Results:</h4>
+      <p>Clermont Phylotype: {{ results }}</p>
+    </div>
+  {% endif %}
+
+    <!-- <p >*Note: that ALL chromosomes and plasmids will be included in the linked file! </p> -->
+    <!-- <p >** Links will be separated by spaces </p> -->
+  <!-- Troublshooting info -->
+  <div class="row"  style='color:darkgrey'>
+    <h5>Troubleshooting</h5>
+    <p >Try refreshing this page if you run into any issues. You can see the source code on<a href="http://github.com/nickp60/clermontpcr"> GitHub </a>.</p>
+    <p >Does some result look strange? Please raise an issue on GitHub, attaching your genome of interest.. </p>
+    <p >Want to run a big batch of genomes?  Install our commandline tool via pip!</p>
+  </div>
+</div>
 {% endblock %}
