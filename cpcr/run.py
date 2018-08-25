@@ -10,7 +10,8 @@ import itertools
 from Bio.Seq import Seq
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
-from ezclermont import __version__
+
+from . import __version__
 
 class PcrHit(object):
     newid = itertools.count()
@@ -439,13 +440,14 @@ def main(args=None):
         sys.stderr.write(
                 "No matches found for control PCR, but continuing analysis\n")
         EC_control_fail = True
+
     # check for shigella-ness
     shigella_virA_primers["virA"], virA_report_string = run_primer_pair(
         seqs=seqs, allele="virA",
         vals=shigella_virA_primers["virA"],
         allow_partial=allow_partial)
     sys.stderr.write(virA_report_string + "\n")
-    sys.exit(1)
+
     # run Clermont Typing
     sys.stderr.write("Running Quadriplex PCR\n")
     profile = ""
