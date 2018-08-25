@@ -14,7 +14,7 @@ install:
 script:
 - python setup.py install
 - ezclermont -h
-- ezclermong --version
+- ezclermont --version
 - nosetests --with-coverage --cover-package=cpcr tests/ -v
 after_success: coveralls
 
