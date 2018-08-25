@@ -10,6 +10,7 @@ import itertools
 from Bio.Seq import Seq
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
+from ezclermont import __version__
 
 class PcrHit(object):
     newid = itertools.count()
@@ -87,6 +88,9 @@ def get_args():  # pragma: no cover
     optional.add_argument("-h", "--help",
                           action="help", default=argparse.SUPPRESS,
                           help="Displays this help message")
+    optional.add_argument('--version',
+                          action='version',
+                          version='%(prog)s ' + __version__)
     args = parser.parse_args()
     return args
 
@@ -386,6 +390,11 @@ def main(args=None):
     trpBA_f = "CGGCGATAAAGACAT[CT]TTCAC"
     trpBA_r = "GCAACGCGGC[CT]TGGCGGAAG"
 
+    # shigella primers for https://www.ncbi.nlm.nih.gov/pmc/articles/PMC106136/
+    # also detects EIEC, though
+    virA_f = "CTGCATTCTGGCAATCTCTTCACATC"
+    virA_r = "TGATGAGCTAACTTCGTAAGCCCTCC"
+
     quad_primers = {"chu": [chuA_1b, chuA_2, 288],
                     "yjaA": [yjaA_1b, yjaA_2b, 211],
                     "TspE4": [TspE4C2_1b, TspE4C2_2b, 152],
@@ -393,6 +402,7 @@ def main(args=None):
     c_primers = {"trpA_c": [trpAgpC_1, trpAgpC_2, 219]}
     e_primers = {"arpA_e": [ArpAgpE_f, ArpAgpE_r, 301]}
     cryptic_chu_primers = {"476_chu": [AceK_f, chuA_2, 476]}
+    shigella_virA_primers = {"virA": [virA_f, virA_r, 215]}
 
     controls = {"trpBA_control": [trpBA_f, trpBA_r, 489]}
     sys.stderr.write("Reading in sequence(s) from %s\n" %
@@ -429,6 +439,13 @@ def main(args=None):
         sys.stderr.write(
                 "No matches found for control PCR, but continuing analysis\n")
         EC_control_fail = True
+    # check for shigella-ness
+    shigella_virA_primers["virA"], virA_report_string = run_primer_pair(
+        seqs=seqs, allele="virA",
+        vals=shigella_virA_primers["virA"],
+        allow_partial=allow_partial)
+    sys.stderr.write(virA_report_string + "\n")
+    sys.exit(1)
     # run Clermont Typing
     sys.stderr.write("Running Quadriplex PCR\n")
     profile = ""

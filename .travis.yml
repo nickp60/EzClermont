@@ -13,6 +13,8 @@ install:
 - pip install -r requirements.txt
 script:
 - python setup.py install
+- ezclermont -h
+- ezclermong --version
 - nosetests --with-coverage --cover-package=cpcr tests/ -v
 after_success: coveralls
 
