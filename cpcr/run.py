@@ -77,7 +77,7 @@ class PcrHit(object):
 def get_args():  # pragma: no cover
     parser = argparse.ArgumentParser(
         description="run a 'PCR' to get Clermont 2013 phylotypes; " +
-        "version" + __version__,
+        "version " + __version__,
         add_help=False)
     parser.add_argument("contigs", action="store",
                         help="FASTA formatted genome or set of contigs. " +
