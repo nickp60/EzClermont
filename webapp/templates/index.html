@@ -5,9 +5,10 @@
   <div class="row">
     <div class="eight columns" style="margin-top: 20%">
       <h4><i>In Silico</i> Clermont Phylotyper</h4>
+      <p style='color:darkgrey'>version: {{ version }}</p>
       <p>Easily find the Clermont 2013 phylotypes of your <i>E. coli</i> strains. Simply upload your contigs as a FASTA file, and get results in seconds. </p>
     </div>
-    <div class="four columns columns" style="margin-top: 20%">
+     <div class="four columns columns" style="margin-top: 20%">
       <a href="https://github.com/nickp60/clermontpcr" target="_blank">
 	<img src="{{url_for('static', filename='clermontPCR.png')}}"
 	     style='width:100%;' border="0" alt="Null">
@@ -38,8 +39,6 @@
     </div>
   {% endif %}
 
-    <!-- <p >*Note: that ALL chromosomes and plasmids will be included in the linked file! </p> -->
-    <!-- <p >** Links will be separated by spaces </p> -->
   <!-- Troublshooting info -->
   <div class="row"  style='color:darkgrey'>
     <h5>Citing</h5>

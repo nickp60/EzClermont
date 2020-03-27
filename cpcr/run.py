@@ -13,6 +13,21 @@ from Bio.SeqRecord import SeqRecord
 
 from . import __version__
 
+iupac_codes = {
+    "R": "[AG]",
+    "Y": "[CT]",
+    "S": "[GC]",
+    "W": "[AT]",
+    "K": "[GT]",
+    "M": "[AC]",
+    "B": "[CGT]",
+    "D": "[AGT]",
+    "H": "[ACT]",
+    "V": "[ACG]",
+    "N": "[ATCG]"
+}
+
+
 class PcrHit(object):
     newid = itertools.count()
 
@@ -61,11 +76,13 @@ class PcrHit(object):
 
 def get_args():  # pragma: no cover
     parser = argparse.ArgumentParser(
-        description="run a 'PCR' to get clermont types",
+        description="run a 'PCR' to get Clermont 2013 phylotypes; " +
+        "version" + __version__,
         add_help=False)
     parser.add_argument("contigs", action="store",
-                        help="FASTA formatted genome or set of contigs")
-
+                        help="FASTA formatted genome or set of contigs. " +
+                        " If reading from stdin, use '-'",
+                        default="-")
     optional = parser.add_argument_group('optional arguments')
     optional.add_argument("-m", "--min_length", dest='min_length',
                           help="minimum contig length to consider." +
@@ -73,7 +90,8 @@ def get_args():  # pragma: no cover
                           default=500)
     optional.add_argument("-e", "--experiment_name", dest='experiment_name',
                           help="name of experiment; defaults to file name " +
-                          "without extension.")
+                          "without extension.  If reading from stdin, " +
+                          "uses the first contig's ID")
     optional.add_argument("-n", "--no_partial", dest='no_partial',
                           action="store_true",
                           help="If scanning contigs, breaks between " +
@@ -410,12 +428,19 @@ def main(args=None):
                      os.path.basename(args.contigs))
     seqs = []
     rejected_contigs = 0
-    with open(args.contigs, 'r') as fasta:
-        for seq in SeqIO.parse(fasta,"fasta"):
+    if args.contigs == "-":
+        for seq in SeqIO.parse(sys.stdin, "fasta"):
             if len(seq.seq) > args.min_length:
                 seqs.append(seq)
             else:
                 rejected_contigs = rejected_contigs + 1
+    else:
+        with open(args.contigs, 'r') as fasta:
+            for seq in SeqIO.parse(fasta,"fasta"):
+                if len(seq.seq) > args.min_length:
+                    seqs.append(seq)
+                else:
+                    rejected_contigs = rejected_contigs + 1
     if rejected_contigs > 0:
         sys.stderr.write(str(
             "Ignoring %d contigs less than the set " +
@@ -486,7 +511,10 @@ def main(args=None):
     sys.stderr.write("-------------------------\n")
     # This should be the only thing being written to stdout
     if args.experiment_name is None:
-        expname = os.path.splitext(os.path.basename(args.contigs))[0]
+        if args.contigs != "-":
+            expname = os.path.splitext(os.path.basename(args.contigs))[0]
+        else:
+            expname = seqs[0].id
     else:
         expname = args.experiment_name
     sys.stdout.write(
@@ -497,6 +525,15 @@ def main(args=None):
     return(Clermont_type, profile)
 
 
+def cli_main():
+    """ all this does is gobble the results returned for the webapp
+    All the logging info is on stderr already
+    """
+    args = get_args()
+    cler_type, cler_profile = main(args)
+    sys.exit(0)
+
+
 if __name__ == "__main__":
     args = get_args()
-    main(args)
+    cler_type, cler_profile = main(args)
