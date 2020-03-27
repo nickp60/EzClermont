@@ -29,7 +29,8 @@ jobs:
         password:
           secure: "l3D6ReAfNc+nVm1rwPSRk43B31EalBhnBG3Y8ZP7pKw1imAMFYozKBK3MOPZOl7LxDV80kaEhRFzM/AoONLr99xpX+Sa4Gbl1B7n6ukb+iK8WYhkZo93yy2wPbLqOztvZDUgn0bMiFLs2zLq1vjDcszFn5LSwkF2memT+MMxlRuG+9sZ+e8uwfNCdyLPV5lIjDTTZ1gscj3JcqyJkqTegA68A5Nps9QmWVgox4GsXoDc3ZwGkmh/L6IND+xHXs0Uex4JaEVN9wG3tn0rDdFMVVFy/X1oyk3YETvxOZXlydCkOQe3yVJB7iNdCu6Nq04gi21BjxR6deHsnceU1Vs9aPL4fEMyuMMzH01j/LZJpdYfN28Z5s70bCk0HBQV6/bshUTwlpAmR0E6PQX86v9L48ahaFQ7lBpGJMrdGJafCsbSASOxtgZYJK5uRAUm0GilWAizCk7Ko2vGUpmUfRSyjtVVEpmEewQv57qMsY8F5B7RXPBGmzg2saKLkl4mnl3wPz5uavD8Q0E471/l6vGtOPgFRgBRlwvzU7mBvMFeeGPilZfnC2aES4W1V0wmG6TsTf3i5bqQZ4SXyrIbctCUEF7oTL02gY7EMmSCEfttvFUJGPUUE74Kn1jv1h+6jC4oC5aMgR3Q/Ir2auqmCGjk/EiUEmA4qAdu4Aq0mMhm2TM="
         if: tag
-
+        on:
+          branch: master
 stages:
   allow_failures:
     - deploy
