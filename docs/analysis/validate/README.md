@@ -1,5 +1,5 @@
 # Getting the validation data
-The Strains listed in Clermont 2015  are mostly from bioproject PRJNA321606 (all the ECOR strains), and a handful of others.  We get the bioproject strains directly ffrom the link on the bioprohject page.  The other strains are found in the `other_accessions.txt` doc. 6 strains from the paper were not availible on GenbankThat was used with the Entrez Batch tool to download.
+The Strains listed in Clermont 2015  are mostly from bioproject PRJNA321606 (all the ECOR strains), and a handful of others.  We get the bioproject strains directly ffrom the link on the bioproject page.  The other strains are found in the `other_accessions.txt` doc. 6 strains from the paper were not availible on Genbank. That was used with the Entrez Batch tool to download.
 
 I then manually copied and pasted table 2 from "Guide to the various phylogenetic classification schemes for Escherichia coliand the correspondence among schemes" Olivier Clermont, David Gordon and Erick Denamur
 

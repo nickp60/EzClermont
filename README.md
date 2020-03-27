@@ -2,7 +2,7 @@
 ![PyPI Version](https://img.shields.io/pypi/v/ezclermont)
 ![Docker Image Version (latest by date)](https://img.shields.io/docker/v/nickp60/ezclermont?label=Docker&sort=date)
 
-![Icon](https://github.com/nickp60/EzClermont/blob/master/icon/clermontPCR-0.png)
+![Icon](https://raw.githubusercontent.com/nickp60/EzClermont/master/icon/clermontPCR-0.png)
 # EzClermont: The *E. coli* Clermont PCR phylotyping tool
 
 ## Description
