@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/nickp60/clermontpcr.svg?branch=master)](https://travis-ci.org/nickp60/EzClermont.svg?branch=master)[![Coverage Status](https://coveralls.io/repos/github/nickp60/EzClermont/badge.svg?branch=master)](https://coveralls.io/github/nickp60/EzClermont?branch=master)[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI version](https://badge.fury.io/py/clermontpcr.svg)](https://badge.fury.io/py/ezclermont)
+![Docker Image Version (latest by date)](https://img.shields.io/docker/v/nickp60/ezclermont?sort=date)
 
 ![Icon](https://github.com/nickp60/EzClermont/blob/master/icon/clermontPCR-0.png)
 # EzClermont: The *E. coli* Clermont PCR phylotyping tool
