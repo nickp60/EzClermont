@@ -1,7 +1,7 @@
 import os
 import sys
 from flask import Flask, render_template, request, session
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 import tempfile
 from argparse import Namespace
 from Bio import SeqIO
@@ -12,11 +12,10 @@ from cpcr import _version
 print("Running ezclermont version", _version.__version__)
 
 app = Flask(__name__)
-# app.secret_key = 'crytographyisnotmystrongsuit'
 app.secret_key = os.urandom(24)
 
 #  set the max file size to 20mb.  If an ecoli fasta is
-#    larger than this, then its probably not an e coli
+#    larger than this, then its not an e coli
 app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
 
 
@@ -74,9 +73,7 @@ def index():
             if os.path.isfile(tmpfile) and is_fasta(tmpfile):
                 print(tmpfile)
                 results, profile  = runcler(
-                    contigsfile=tmpfile,
-                    #ignore_control=request.form.get('allowcontrolfails'),
-                    # partial=request.form.get('allowpartial')
+                    contigsfile=tmpfile
                 )
             else:
                 results = "Unable to read file.  Are you sure its a valid fasta?"
@@ -84,6 +81,7 @@ def index():
             ###
             return render_template(
                 'index.html',
+                version=_version.__version__,
                 header=header,
                 content=teaser,
                 results=results,
@@ -93,7 +91,9 @@ def index():
         else:
             pass
     else:
-        return render_template("index.html")
+        return render_template(
+            "index.html",
+            version=_version.__version__)
 
 def runcler(contigsfile):
     # prepare args

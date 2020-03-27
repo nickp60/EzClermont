@@ -4,8 +4,8 @@ Setup for EzClermont
 
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
-# To use a consistent encoding
 import re
+# To use a consistent encoding
 from codecs import open
 from os import path
 import sys
@@ -65,6 +65,8 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
     keywords='bioinformatics evolution genomics development',
     packages=find_packages(),
@@ -74,7 +76,7 @@ setup(
     },
     entry_points={
        'console_scripts': [
-           'ezclermont=cpcr.run:main',
+           'ezclermont=cpcr.run:cli_main',
        ],
     },
 )
