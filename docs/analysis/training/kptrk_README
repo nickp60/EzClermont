@@ -1,0 +1,6 @@
+Fri Mar 27 16:49:27 GMT 2020	kptrk 
+Fri 27 Mar 20:14:08 GMT 2020	for i in /mnt/shared/projects/Escherichia_coli/201409_environmental_samples/analysis/2019-04-26-enterobase_subset/*fasta; do bb=$(filename $i) ; cat $i | sed "s/>/>${bb}_/g" > combined/${bb}.fasta ; done 
+Fri 27 Mar 20:18:56 GMT 2020	cat combined/*fasta > combined.fasta 
+Fri 27 Mar 20:25:08 GMT 2020	bash ./extract_amplicons.sh 
+Sat 28 Mar 02:18:39 GMT 2020	conda install mafft 
+Sat 28 Mar 12:22:56 GMT 2020	rm -rf ./2020-03-27_clermont_region_extraction/ ; bash ./extract_amplicons.sh 
