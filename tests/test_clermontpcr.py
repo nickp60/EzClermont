@@ -145,6 +145,32 @@ class clermontTestCase(unittest.TestCase):
             self.assertEqual(
                 ref[0], result)
 
+    def test_integration2(self):
+        """ execute ezclermont Big 6 and a O104 for good measure
+        - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5908948/
+        - https://jcm.asm.org/content/50/9/2894
+        - https://www.liebertpub.com/doi/10.1089/fpd.2018.2567
+        """
+        O26_ref  = ["B1", "CP028126.1"]
+        O45_ref  = ["B1", "CP031916.1"]
+        O103_ref = ["B1", "CP028112.1"]
+        O111_ref = ["B1", "CP028117.1"]
+        O121_ref = ["B1", "CP028117.1"]
+        O145_ref = ["A",  "CP027105.1"]
+        # no reference for this one
+        O1452_ref = ["D", "CP028379.1"]
+        O104_ref = ["B1", "CP003289.1"]
+        for ref in [O26_ref, O45_ref, O103_ref, O111_ref, O121_ref, O145_ref, O1452_ref, O104_ref]:
+            args = argparse.Namespace(
+                contigs=os.path.join(os.path.dirname(__file__),
+                                     "refs","big6", ref[1] + ".fasta"),
+                experiment_name=None,
+                no_partial=False,
+                min_length=500)
+            result, profile = clp.main(args)
+            self.assertEqual(
+                ref[0], result)
+
     def test_integration_noncoli(self):
         Crypt_ref = ["Cryptic", "AEMF01000001"]
         args = argparse.Namespace(
