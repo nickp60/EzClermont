@@ -87,7 +87,7 @@ def get_args():  # pragma: no cover
     optional.add_argument("-m", "--min_length", dest='min_length',
                           help="minimum contig length to consider." +
                           "default: %(default)s",
-                          default=500)
+                          default=500, type=int)
     optional.add_argument("-e", "--experiment_name", dest='experiment_name',
                           help="name of experiment; defaults to file name " +
                           "without extension.  If reading from stdin, " +
@@ -403,7 +403,7 @@ def main(args=None):
     yjaA_1b = ambig_to_regex("YAAACKTGAAGTGTCAGGAG") #
     yjaA_2b = ambig_to_regex("ARTRCGTTCCTCAACCTGTG") #
     # TspE4.C2d
-    TspE4C2_1b = ambig_to_regex("CACKATTYGTAAGRTCATCC") #
+    TspE4C2_1b = ambig_to_regex("CACKATTYGTAAGRYCATCC") #
     TspE4C2_2b = ambig_to_regex("AGTTTATCGCTGCGGGTCGC")
     # arpA
     AceK_f =  ambig_to_regex("AAYRCYATTCGCCAGCTTGC") #
