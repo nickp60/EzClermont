@@ -397,27 +397,27 @@ def main(args=None):
         args = get_args()
     ####### Quadriplex PCR ########
     # chuA
-    chuA_1b = ambig_to_regex("ATGGTACYGGRCGAACCAAC")
+    chuA_1b = ambig_to_regex("ATGGTACYGGRCGAACCAAC") #
     chuA_2  = ambig_to_regex("TRCCRCCAGTRCCAAAGACA")
     # yjaH
-    yjaA_1b = ambig_to_regex("CAAACGTGAAGTGTCAGGAG")
-    yjaA_2b = ambig_to_regex("AATRCGTTCCTCAACCTGTG")
+    yjaA_1b = ambig_to_regex("YAAACKTGAAGTGTCAGGAG") #
+    yjaA_2b = ambig_to_regex("ARTRCGTTCCTCAACCTGTG") #
     # TspE4.C2d
-    TspE4C2_1b = ambig_to_regex("CACTATTCGTAAGRYCATCC")
+    TspE4C2_1b = ambig_to_regex("CACKATTYGTAAGRTCATCC") #
     TspE4C2_2b = ambig_to_regex("AGTTTATCGCTGCGGGTCGC")
     # arpA
-    AceK_f =  ambig_to_regex("AAYGCYATTCGCCAGCTTGC")
-    ArpA1_r = ambig_to_regex("TCTCCMCATAYMGYACGCTA")
+    AceK_f =  ambig_to_regex("AAYRCYATTCGCCAGCTTGC") #
+    ArpA1_r = ambig_to_regex("TCTCCMCATACYGYACGCTA") #
     #################################
     # arpA, for group e
-    ArpAgpE_f = ambig_to_regex("GATDCCATYTTGTCRAAATATGCC")
-    ArpAgpE_r = ambig_to_regex("GAAAAKAAAAAGAMTTYHCAAGAG")
+    ArpAgpE_f = ambig_to_regex("RATKCMATYTTGTCRAAATATGCC") #
+    ArpAgpE_r = ambig_to_regex("GAAARKRAAAADAMYYYYCAAGAG") #
     # trpA, for group c
-    trpAgpC_1 = ambig_to_regex("AGTTTTAYGCSSARTGCGAG")
-    trpAgpC_2 = ambig_to_regex("TCHGCDCCSGTCACGCCC")
+    trpAgpC_1 = ambig_to_regex("AGTTYTAYGCCSVRWGCGAG") #
+    trpAgpC_2 = ambig_to_regex("TCWGYDCYVGTYACGCCC") #
     # trpA, for control
-    trpBA_f = ambig_to_regex("CGGCGATAAAGACATYTTCAC")
-    trpBA_r = ambig_to_regex("GCAACGCGGCYTGGCGGAAG")
+    trpBA_f = ambig_to_regex("CGGSGATAAAGAYATYTTCAC") #
+    trpBA_r = ambig_to_regex("GCAACGYGSCBWKRCGGAAG") #
 
     # shigella primers for https://www.ncbi.nlm.nih.gov/pmc/articles/PMC106136/
     # also detects EIEC, though
