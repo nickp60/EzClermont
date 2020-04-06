@@ -382,32 +382,42 @@ def run_primer_pair(seqs, allele, vals, allow_partial):
     return(vals, profile)
 
 
+def ambig_to_regex(primer):
+    new_primer = []
+    for i in list(primer):
+        if i in iupac_codes.keys():
+            new_primer.append(iupac_codes[i])
+        else:
+            new_primer.append(i)
+    return("".join(new_primer))
+
+
 def main(args=None):
     if args is None:
         args = get_args()
     ####### Quadriplex PCR ########
     # chuA
-    chuA_1b = "ATGGTACCGGACGAACCAAC"
-    chuA_2  = "T[GA]CC[GA]CCAGT[AG]CCAAAGACA"
+    chuA_1b = ambig_to_regex("ATGGTACYGGRCGAACCAAC")
+    chuA_2  = ambig_to_regex("TRCCRCCAGTRCCAAAGACA")
     # yjaH
-    yjaA_1b = "CAAACGTGAAGTGTCAGGAG"
-    yjaA_2b = "AAT[GA]CGTTCCTCAACCTGTG"
-    # TspE4.C2
-    TspE4C2_1b = "CACTATTCGTAAG[GA][TC]CATCC"
-    TspE4C2_2b = "AGTTTATCGCTGCGGGTCGC"
+    yjaA_1b = ambig_to_regex("CAAACGTGAAGTGTCAGGAG")
+    yjaA_2b = ambig_to_regex("AATRCGTTCCTCAACCTGTG")
+    # TspE4.C2d
+    TspE4C2_1b = ambig_to_regex("CACTATTCGTAAGRYCATCC")
+    TspE4C2_2b = ambig_to_regex("AGTTTATCGCTGCGGGTCGC")
     # arpA
-    AceK_f =  "AA[CT]GC[TC]ATTCGCCAGCTTGC"
-    ArpA1_r = "TCTCC[CA]CATA[CT][CA]G[TC]ACGCTA"
+    AceK_f =  ambig_to_regex("AAYGCYATTCGCCAGCTTGC")
+    ArpA1_r = ambig_to_regex("TCTCCMCATAYMGYACGCTA")
     #################################
     # arpA, for group e
-    ArpAgpE_f = "GAT[GT]CCAT[CT]TTGTC[AG]AAATATGCC"
-    ArpAgpE_r = "GAAAA[GT]AAAAAGA[AC]TT[CT][CAT]CAAGAG"
+    ArpAgpE_f = ambig_to_regex("GATDCCATYTTGTCRAAATATGCC")
+    ArpAgpE_r = ambig_to_regex("GAAAAKAAAAAGAMTTYHCAAGAG")
     # trpA, for group c
-    trpAgpC_1 = "AGTTTTA[TC]GC[CG][CG]A[GA]TGCGAG"
-    trpAgpC_2 = "TC[TCA]GC[GAT]CC[GC]GTCACGCCC"
+    trpAgpC_1 = ambig_to_regex("AGTTTTAYGCSSARTGCGAG")
+    trpAgpC_2 = ambig_to_regex("TCHGCDCCSGTCACGCCC")
     # trpA, for control
-    trpBA_f = "CGGCGATAAAGACAT[CT]TTCAC"
-    trpBA_r = "GCAACGCGGC[CT]TGGCGGAAG"
+    trpBA_f = ambig_to_regex("CGGCGATAAAGACATYTTCAC")
+    trpBA_r = ambig_to_regex("GCAACGCGGCYTGGCGGAAG")
 
     # shigella primers for https://www.ncbi.nlm.nih.gov/pmc/articles/PMC106136/
     # also detects EIEC, though

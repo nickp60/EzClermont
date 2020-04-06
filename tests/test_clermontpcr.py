@@ -105,6 +105,19 @@ class clermontTestCase(unittest.TestCase):
         res3 = clp.ambig_rc("[AT]ATCACTAC[TACT]A[CA][TC]", verbose=True)
         self.assertEqual(res3, "[GA][TG]T[AGTA]GTAGTGAT[AT]")
 
+
+    def test_ambig_to_regex(self):
+        self.assertEqual(
+            clp.ambig_to_regex("TRCCRCCAGTRCCAAAGACA"),
+                               "T[AG]CC[AG]CCAGT[AG]CCAAAGACA",
+
+        )
+        self.assertEqual(
+            clp.ambig_to_regex(
+                "AGTTTTAYGCSSARTGCGAG"),
+                "AGTTTTA[CT]GC[GC][GC]A[AG]TGCGAG"
+        )
+
     def test_integration(self):
         """ execute ezclermont on connonical clermonted genome sequences
         These were selected from a lit review (primarily from clermont2013
