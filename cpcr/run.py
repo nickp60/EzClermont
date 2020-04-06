@@ -264,18 +264,21 @@ def interpret_hits(arpA, chu, yjaA, TspE4):
         {
             "A":         [[1, 0, 0, 0]],
             "B1":        [[1, 0, 0, 1]],
-            "F":         [[0, 1, 0, 0]],
+            # "F":         [[0, 1, 0, 0]],
             "B2":        [[0, 1, 1, 0],
-                          [0, 1, 1, 1],
-                          [0, 1, 0, 1]],
+                          [0, 1, 1, 1]],
+            #              [0, 1, 0, 1]],
             "A/C":       [[1, 0, 1, 0]],
             "D/E":       [[1, 1, 0, 0],
                           [1, 1, 0, 1]],
+            # new
+            "F/G":      [[0, 1, 0, 0]],
+            "B2/G":       [[0, 1, 0, 1]],
+            # new
             "E/cryptic": [[1, 1, 1, 0]],
             "cryptic":   [[0, 0, 1, 0]],
             # add this in when we learn the frag sequence, see note below
             "U/cryptic": [[0, 0, 0, 0]],
-            # "U":         [[0, 0, 0, 0],
             "U":         [[0, 0, 0, 1],
                           [0, 0, 1, 1],
                           [1, 0, 1, 1],
@@ -289,7 +292,7 @@ def interpret_hits(arpA, chu, yjaA, TspE4):
     raise ValueError("results profile could not be interpretted! Exiting")
 
 
-def refine_hits(hit, c_primers, e_primers, cryptic_chu_primers, EC_control_fail,
+def refine_hits(hit, c_primers, e_primers, g_primers, cryptic_chu_primers, EC_control_fail,
                 allow_partial, seqs):
     """ Given the basic clermont type, refine if needed
     run additional primer sets to differentiate groups
@@ -324,6 +327,19 @@ def refine_hits(hit, c_primers, e_primers, cryptic_chu_primers, EC_control_fail,
             return "C"
         else:
             return "A"
+    elif hit == "F/G" or hit == "B2/G":
+        sys.stderr.write("Clermont type is B2/F/G; running the ybgD primers\n")
+        g_primers["ybgD"], report_string = run_primer_pair(
+            seqs=seqs, allele="ybgD",
+            vals=g_primers["ybgD"],
+            allow_partial=allow_partial)
+        if g_primers["ybgD"][3]:
+            return "G"
+        else:
+           if hit == "F/G":
+               return "F"
+           else:
+               return "B2"
     # this is to resolve instances where a large, 476bp chuA fragment can
     # differentiate between cryptic clades and the unknown.
     # "Instead yield a PCR product that is 476 bp in size (Fig. 1).
@@ -418,7 +434,12 @@ def main(args=None):
     # trpA, for control
     trpBA_f = ambig_to_regex("CGGSGATAAAGAYATYTTCAC") #
     trpBA_r = ambig_to_regex("GCAACGYGSCBWKRCGGAAG") #
-
+    # new primers for group G
+    ybgD_F = ambig_to_regex("GTTGACTAAGCGCAGGTCGA")
+    ybgD_R = ambig_to_regex("TATGCGGCTGATGAAGGATC")
+    # new primers for group F, not used
+    cfaB_f = ambig_to_regex("CTAACGTTGATGCTGCTCTG")
+    cfaB_r = ambig_to_regex("TATGCGGCTGATGAAGGATC")
     # shigella primers for https://www.ncbi.nlm.nih.gov/pmc/articles/PMC106136/
     # also detects EIEC, though
     virA_f = "CTGCATTCTGGCAATCTCTTCACATC"
@@ -430,6 +451,7 @@ def main(args=None):
                     "arpA": [AceK_f, ArpA1_r, 400]}
     c_primers = {"trpA_c": [trpAgpC_1, trpAgpC_2, 219]}
     e_primers = {"arpA_e": [ArpAgpE_f, ArpAgpE_r, 301]}
+    g_primers = {"ybgD":   [ybgD_F, ybgD_R, 177]}
     cryptic_chu_primers = {"476_chu": [AceK_f, chuA_2, 476]}
     shigella_virA_primers = {"virA": [virA_f, virA_r, 215]}
 
@@ -508,11 +530,14 @@ def main(args=None):
             sys.stderr.write("No matches found for C/E control PCR. Exiting\n")
             Clermont_type = "EC_control_fail"
             refine = False
+    # elif Clermont_type in ["F/G", "B2/G"]:
+    #     else:
     if refine:
         Clermont_type = refine_hits(
             hit=Clermont_type,
             c_primers=c_primers,
             e_primers=e_primers,
+            g_primers=g_primers,
             cryptic_chu_primers=cryptic_chu_primers,
             allow_partial=allow_partial,
             EC_control_fail=EC_control_fail,

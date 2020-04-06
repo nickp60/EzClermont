@@ -1,63 +1,58 @@
 # set working directory to clermontpcr
-setwd("~/GitHub/clermontpcr/docs/analysis/")
-
-#setwd("~/GitHub/Nolan_et_al_2018/")
-
-metadata <- read.csv("validate/metadata_clermont15.csv", stringsAsFactors = F)
-metadata$short_acc <- gsub("(.*)(\\.\\d)", "\\1", metadata$genbank_acc) 
-
-expdata <- read.csv("validate/2018-04-30.txt", sep="\t", col.names = c("long_acc", "exp_group"), stringsAsFactors = F, header=F)
-expdata <- read.csv("./validate/2018-05-10.txt", sep="\t", col.names = c("long_acc", "exp_group"), stringsAsFactors = F, header=F)
-expdata$acc <- gsub("(GCA_.*?\\.\\d)_(.*)","\\1", expdata$long_acc)
-
-keyfile <- read.csv("validate/accession_name.txt", sep="\t", col.names = c("long_acc", "ecor"), stringsAsFactors = F, header=F)
-keyfile$acc <- gsub("(.*)(\\.\\d)", "\\1", keyfile$long_acc) 
+#  setwd("~/GitHub/ezclermont//docs/analysis/")
 
 
-keyfile$acc[!keyfile$acc %in% expdata$acc]
-dat <- merge(keyfile, expdata, by="acc")
-dat <- merge(dat, metadata, by.x="ecor", by.y="strain")
+metadata <- read.csv("validate/validation_metadata.csv", stringsAsFactors = F)
+metadata$simple <-  gsub("(.*?) (.*)","\\1", metadata$reported_phylogroup)
 
 
-dat$raw_match <- dat$exp_group == dat$quardiplex_pcr_base
+expdata <- read.csv("validate/2020-04-06-ezclermont.txt", 
+                    sep="\t", col.names = c("long_acc", "ezClermont_phylogroup"), 
+                    stringsAsFactors = F, header=F)
+expdata$accession <- gsub("(GCA_.*?\\.\\d)_(.*)","\\1", expdata$long_acc)
+together <- merge(metadata, expdata, by="accession", all.y = T)
+
+
+together$raw_match <- together$simple == together$ezClermont_phylogroup
 
 # fix mismatch of particular clade type
-dat$match <- ifelse(grepl("Clade", dat$quardiplex_pcr_base) & 
-                          grepl("cryptic", dat$exp_group) & !dat$raw_match,
+together$match <- ifelse(grepl("Clade", together$reported_phylogroup) & 
+                          grepl("cryptic", together$ezClermont_phylogroup) & !together$raw_match,
                         T,
-                        dat$raw_match)
+                        together$raw_match)
 
 
 
-table(dat$raw_match)
-table(dat$match)
+table(together$raw_match)
+table(together$match)
 
 #View(dat[,c("acc", "ecor", "quardiplex_pcr_base", "exp_group", "match")])
 
-write.table(file = file.path(".", "matched_results.txt"), dat[,c("acc", "ecor", "quardiplex_pcr_base", "exp_group", "match")])
+write.table(file = file.path(".", "matched_results.txt"), together[,c("accession", "strain", "reported_phylogroup", "ezClermont_phylogroup", "match")])
 
 ## try http:// if https:// URLs are not supported
 #source("https://bioconductor.org/biocLite.R")
 ## biocLite("BiocUpgrade") ## you may need this
 #biocLite("ggtree")
+library(ggplot2)
 library(ggtree)
 
 
 
-tree <- read.newick("./validate/kSNP_output_k19/tree_AlleleCounts.parsimony.tre")
+tree <- read.tree("./validate/kSNP_output_k19/tree_AlleleCounts.parsimony.tre")
 
-dat$label <- substr(dat$acc, 1, 13)
+together$label <- substr(together$acc, 1, 13)
 
-labdf <- merge(data.frame(label=tree$tip.label), dat, by="label")
+labdf <- merge(data.frame(label=tree$tip.label), together, by="label")
 #labdf$quardiplex_pcr_base_base <- ifelse(labdf$quardiplex_pcr_basemerge(data.frame(label=tree$tip.label), dat, by="label")
 
 # add labels for where ezclermont went wrong
 labdf$label2 <- ifelse(labdf$match,
-                       labdf$ecor,
-                       paste0("(", labdf$exp_group, ") ", labdf$ecor))
+                       labdf$strain,
+                       paste0("(", labdf$ezClermont_phylogroup, ") ", labdf$strain))
 # combine all the clades into one
-labdf$quardiplex_pcr_base_tidy <- ifelse(grepl("Clade", labdf$quardiplex_pcr_base),
-                       "Cryptic", labdf$quardiplex_pcr_base)
+labdf$quardiplex_pcr_base_tidy <- ifelse(grepl("Clade", labdf$simple),
+                       "Cryptic", labdf$simple)
 labdf$matchsize <- ifelse(labdf$match,  1, 5)
 
 

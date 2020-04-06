@@ -22,8 +22,10 @@ class clermontTestCase(unittest.TestCase):
         See the clermont 2013 paper
         """
 
-        ref = ['A', 'A/C', 'B1', 'A/C', 'D/E', 'D/E', 'E/cryptic', 'D/E',
-               'D/E', 'F', 'B2', 'B2', 'B2', 'cryptic', 'E/cryptic', 'U/cryptic']
+        ref = [
+            'A', 'A/C', 'B1', 'A/C', 'D/E', 'D/E', 'E/cryptic', 'D/E', 'D/E',
+            'F/G', 'B2', 'B2/G', 'B2', 'cryptic', 'E/cryptic', 'U/cryptic'
+        ]
         test = []
         # if True:
         # A's
@@ -49,14 +51,16 @@ class clermontTestCase(unittest.TestCase):
             clp.interpret_hits(arpA=True, chu=True, yjaA=False, TspE4=False))
         test.append(
             clp.interpret_hits(arpA=True, chu=True, yjaA=False, TspE4=True))
-        # F
+        # F/G
         test.append(
             clp.interpret_hits(arpA=False, chu=True, yjaA=False, TspE4=False))
         # B2
         test.append(
             clp.interpret_hits(arpA=False, chu=True, yjaA=True, TspE4=False))
+        # B2/G
         test.append(
             clp.interpret_hits(arpA=False, chu=True, yjaA=False, TspE4=True))
+        # B2
         test.append(
             clp.interpret_hits(arpA=False, chu=True, yjaA=True, TspE4=True))
         # cryptic
@@ -132,6 +136,7 @@ class clermontTestCase(unittest.TestCase):
         F2_ref = ["F", "LYBO00000000.1"]
         B2_ref = ["B2", "CU651637.1"]
         Ferg_ref = ["U/cryptic", "NC_011740.1"]
+        G_ref = ["G", "GCF_900499975.1_921A_genomic.fna"]
 
         for ref in [A_ref, B1_ref, C_ref, E1_ref, E2_ref, D_ref, F1_ref,
                     F2_ref, B2_ref, Ferg_ref]:
