@@ -3,47 +3,54 @@ The Strains listed in Clermont 2015  are mostly from bioproject PRJNA321606 (all
 
 
 # Running EzClermont
-The strains were unzipped and were then added to a `combined` directory, and EzClermont was run:
+The strains were unzipped and were then added to a `./genome_assemblies_genome_fasta/ncbi-genomes-2020-04-06/` directory, and EzClermont was run:
 
 ```
-ls ./docs/analysis/validate/combined/*.fa | parallel "ezclermont {} -p 1>> 2018-05-08_p.txt  2>> 2018-05-08_p.log"
-
-# or, without parallel
-for i in ./docs/analysis/data/combined/*.fna ;
+for i in ./genome_assemblies_genome_fasta/ncbi-genomes-2020-04-06/*.gz
 do
-  echo "processing $i"
-  clermontpcr $i 1>> 2018-04-30.txt 2>> 2018-04-30.log
+	nam=$(basename $i)
+	echo $nam
+	cat $i | gunzip  |  ezclermont  - -e $nam >> 2020-04-06-ezclermont.txt
 done
-
 ```
+
+
 
 # Generating kmer-base phylogentic tree
 
 
 ```
-	# generate the file list
-	~/kSNP3.021_Linux_package/kSNP3/MakeKSNP3infile ./combined/ ksnp_manifest
-	# make a combined fasta for Kchooser to determinine optimal k
-	MakeFasta ./ksnp_manifest ksnp_combined.fasta A
-	# run Kchooser
-	Kchooser ./ksnp_combined.fasta
-	#  found out that k=19 was ideal
-	#do a bunch of nonsense to fix perfectly sensible file names
-	mkdir renamed_ksnp
-	while read path name
-	do
-	  echo $path
-	  echo $namedone
-      cp $path ./renamed_ksnp/${name}.fa
-	done < ksnp_manifest
-	# remake manifest
-	MakeKSNP3infile ./renamed_ksnp/ fixed_ksnp_manifest A
-	# run kSNP3 whole hog: neighbor joeining, etc.
-	~/kSNP3.021_Linux_package/kSNP3/kSNP3 -in fixed_ksnp_manifest -outdir kSNP_output_k19 -k 19 -ML -NJ -vcf -core -min_frac 0.9
-	# rerunning it to output to external drive, because this takes an obscene amount of temp space.  Like over 10GB.  for 95 strains.  Why.
+mkdir ./genome_assemblies_genome_fasta/tmp/
+gunzip ./genome_assemblies_genome_fasta/ncbi-genomes-2020-04-06/GCA_00*
+for i in ./genome_assemblies_genome_fasta/ncbi-genomes-2020-04-06/*.gz ; do bas=$(filename $i) ; cat $i | gunzip > ./genome_assemblies_genome_fasta/tmp/${bas}.fasta ; done
+
+/Applications/Harvest-OSX64-v1.1.2/parsnp -c -d ./genome_assemblies_genome_fasta/tmp/ -r !  -p 4 -o ./alignment/
+/Applications/Harvest-OSX64-v1.1.2/harvesttools  -i ./alignment/parsnp.ggr -M  ./alignment/parsnp.msa
+
+cat alignment/parsnp.msa | sed -e 's/^>\(.\{5\}\)\(.\{8\}\).*/\2/'  > alignment/parsnp.clean.msa
+
+
+python -c "import sys,os; print(sys.argv[1]) ; outname=os.path.basename(os.path.splitext(sys.argv[1])[0]); from Bio import AlignIO; alignments = AlignIO.parse(sys.argv[1], 'fasta'); AlignIO.write(alignments, outname + '.phy', 'phylip')"  ./alignment/parsnp.clean.msa
+
+seqret -sequence ./alignment/parsnp.msa -outseq ./alignment/parsnp.phy -osformat2 phylip
+Read and write (return) sequences
 
 ```
 
+# Timing and running ClermontTyping
+```
 
+time for i in ../genome_assemblies_genome_fasta/tmp/GCA_00*.fasta; do   ~/GitHub/ClermonTyping/clermonTyping.sh --fasta $i ; done
+
+cat analysis_2020-04-07_15*/*phylogroups.txt >2020-04-07-CT-results.txt
+
+#  3m7.051s
+```
+
+```
+time for i in ../genome_assemblies_genome_fasta/tmp/GCA_00*.fasta; do   ezclermont  $i  >> 2020-04-06-ezclermont-timing.txt ; done
+
+# 3m43.620s
+```
 # Plotting the results, etc
 The resulting files were then processed with the `plot_Clermont_comparison.R` script.

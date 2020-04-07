@@ -42,6 +42,8 @@ ArpAgpE
 https://www.ncbi.nlm.nih.gov/gene/944933
 TrpBA
 https://www.ncbi.nlm.nih.gov/gene/945768
+ybgD
+https://www.ncbi.nlm.nih.gov/assembly/GCF_900499975.1/
 
 Now,for each of the gene fasta files, find the primer site, and trim the sequence to the "amplicon" with +5bp on either end.  Note that this makes the coordinates in the fasta headers technically incorrect.
 

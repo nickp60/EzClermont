@@ -166,7 +166,7 @@ def ambig_rc(rev_primer, verbose=False):
 
 
 def get_matches(allele, seq_list, fwd_primer, rev_primer, expected_size,
-                allow_partial=False, strand="+"):
+                allow_partial=False, strand="+", verbose=False):
     """ return a list of PCRhits for a given list of sequences and a primer
     """
     assert strand in ["-", "+"], "strand must be either + or -"
@@ -183,17 +183,17 @@ def get_matches(allele, seq_list, fwd_primer, rev_primer, expected_size,
         coords_R = None
         try:
             coords_F = fwd.search(str(i.seq)).span()
-            sys.stderr.write("  F match! on %s \n" % i.id)
+            if verbose: sys.stderr.write("  F match! on %s \n" % i.id)
         except:
             pass
         try:
             coords_R = rev.search(str(i.seq)).span()
-            sys.stderr.write("  R match! on %s \n" % i.id)
+            if verbose: sys.stderr.write("  R match! on %s \n" % i.id)
         except:
             pass
 
         if coords_F is not None and coords_R is not None:
-            sys.stderr.write("  Match found on %s (%s)\n" % (i.id, strand))
+            if verbose: sys.stderr.write("  Match found on %s (%s)\n" % (i.id, strand))
             if abs(coords_R[1] - coords_F[0] - expected_size) < 20:
                 matches.append(PcrHit(
                     allele_name=allele,
@@ -206,7 +206,7 @@ def get_matches(allele, seq_list, fwd_primer, rev_primer, expected_size,
                     allow_partial=allow_partial
                 ))
             else:
-                sys.stderr.write(
+                if verbose: sys.stderr.write(
                     "  Match found, but it is %ibp and it should only be %i\n" %
                     (coords_R[1] - coords_F[0], expected_size))
         elif coords_F is not None:
@@ -214,7 +214,7 @@ def get_matches(allele, seq_list, fwd_primer, rev_primer, expected_size,
                     (strand == "+" and len(i.seq) - coords_F[0] < expected_size) or
                     (strand == "-" and coords_F[0] < expected_size)
             ):
-                sys.stderr.write("  Possible match on %s (%s) %d\n" % (i.id, strand, coords_F[0]))
+                if verbose: sys.stderr.write("  Possible match on %s (%s) %d\n" % (i.id, strand, coords_F[0]))
                 matches.append(PcrHit(
                     allele_name=allele,
                     template_orientation=strand,
@@ -227,14 +227,14 @@ def get_matches(allele, seq_list, fwd_primer, rev_primer, expected_size,
                 ))
 
             else:
-                sys.stderr.write("  Only forward primer hit found\n")
+                if verbose: sys.stderr.write("  Only forward primer hit found\n")
                 pass
         elif coords_R is not None:
             if (
                     (strand == "+" and len(i.seq) - coords_R[0] < expected_size) or
                     (strand == "-" and coords_R[0] < expected_size)
             ):
-                sys.stderr.write("  Possible match on %s (%s)\n" % (i.id, strand))
+                if verbose: sys.stderr.write("  Possible match on %s (%s)\n" % (i.id, strand))
                 matches.append(PcrHit(
                     allele_name=allele,
                     template_orientation=strand,
@@ -245,9 +245,9 @@ def get_matches(allele, seq_list, fwd_primer, rev_primer, expected_size,
                     F_end=None,
                     allow_partial=allow_partial
                 ))
-                sys.stderr.write("  Possible match on %s (%s) %d\n" % (i.id, strand, coords_R[0]))
+                if verbose: sys.stderr.write("  Possible match on %s (%s) %d\n" % (i.id, strand, coords_R[0]))
             else:
-                sys.stderr.write("  Only reverse primer hit found\n")
+                if verbose: sys.stderr.write("  Only reverse primer hit found\n")
         else:
             # sys.stderr.write("No hits on %s" % i.id)
             pass
@@ -293,12 +293,12 @@ def interpret_hits(arpA, chu, yjaA, TspE4):
 
 
 def refine_hits(hit, c_primers, e_primers, g_primers, cryptic_chu_primers, EC_control_fail,
-                allow_partial, seqs):
+                allow_partial, seqs, verbose=False):
     """ Given the basic clermont type, refine if needed
     run additional primer sets to differentiate groups
     """
     if hit == "D/E":
-        sys.stderr.write("Clermont type is D/E; running ArpAgpE primers\n")
+        if verbose: sys.stderr.write("Clermont type is D/E; running ArpAgpE primers\n")
         e_primers["arpA_e"], report_string = run_primer_pair(
             seqs=seqs, allele="arpA_e",
             vals=e_primers["arpA_e"],
@@ -308,7 +308,7 @@ def refine_hits(hit, c_primers, e_primers, g_primers, cryptic_chu_primers, EC_co
         else:
             return "D"
     elif hit == "E/cryptic":
-        sys.stderr.write("Clermont type is E/cryptic; running ArpAgpE primers\n")
+        if verbose: sys.stderr.write("Clermont type is E/cryptic; running ArpAgpE primers\n")
         e_primers["arpA_e"], report_string = run_primer_pair(
             seqs=seqs, allele="arpA_e",
             vals=e_primers["arpA_e"],
@@ -318,7 +318,7 @@ def refine_hits(hit, c_primers, e_primers, g_primers, cryptic_chu_primers, EC_co
         else:
             return "cryptic"
     elif hit == "A/C":
-        sys.stderr.write("Clermont type is A/C; running the trpAgpC primers\n")
+        if verbose: sys.stderr.write("Clermont type is A/C; running the trpAgpC primers\n")
         c_primers["trpA_c"], report_string = run_primer_pair(
             seqs=seqs, allele="trpA_c",
             vals=c_primers["trpA_c"],
@@ -328,7 +328,7 @@ def refine_hits(hit, c_primers, e_primers, g_primers, cryptic_chu_primers, EC_co
         else:
             return "A"
     elif hit == "F/G" or hit == "B2/G":
-        sys.stderr.write("Clermont type is B2/F/G; running the ybgD primers\n")
+        if verbose: sys.stderr.write("Clermont type is B2/F/G; running the ybgD primers\n")
         g_primers["ybgD"], report_string = run_primer_pair(
             seqs=seqs, allele="ybgD",
             vals=g_primers["ybgD"],
@@ -409,6 +409,7 @@ def ambig_to_regex(primer):
 
 
 def main(args=None):
+    verbose = False
     if args is None:
         args = get_args()
     ####### Quadriplex PCR ########
@@ -482,11 +483,11 @@ def main(args=None):
     if len(seqs) > 4 and not args.no_partial:
         allow_partial = True
     else:
-        sys.stderr.write("rejecting potetial partial matches\n")
+        if verbose: sys.stderr.write("rejecting potetial partial matches\n")
 
     # Start with the Control primers before trying anything else
     # these are used primarily for differentiating the C/E groups
-    sys.stderr.write("Running Control PCR\n")
+    if verbose: sys.stderr.write("Running Control PCR\n")
     controls["trpBA_control"], report_string = run_primer_pair(
         seqs=seqs, allele="trpBA_control",
         vals=controls["trpBA_control"],
@@ -509,7 +510,7 @@ def main(args=None):
     sys.stderr.write("Running Quadriplex PCR\n")
     profile = ""
     for key, val in sorted(quad_primers.items()):
-        sys.stderr.write("Scanning %s\n" % key)
+        if verbose: sys.stderr.write("Scanning %s\n" % key)
         quad_primers[key], report_string = run_primer_pair(
             seqs=seqs, allele=key,
             vals=val,
