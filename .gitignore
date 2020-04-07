@@ -106,3 +106,4 @@ ENV/
 *.bbl
 *.blg
 *.out
+docs/analysis/validate/ct_res/analysis_*
