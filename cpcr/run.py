@@ -436,8 +436,8 @@ def main(args=None):
     trpBA_f = ambig_to_regex("CGGSGATAAAGAYATYTTCAC") #
     trpBA_r = ambig_to_regex("GCAACGYGSCBWKRCGGAAG") #
     # new primers for group G
-    ybgD_F = ambig_to_regex("GTTGACTAAGCGCAGGTCGA")
-    ybgD_R = ambig_to_regex("TATGCGGCTGATGAAGGATC")
+    ybgD_F = ambig_to_regex("GTTGACTAARCGYAGGTCGA")
+    ybgD_R = ambig_to_regex("KATGYDGCYGATKAAGGATC")
     # new primers for group F, not used
     cfaB_f = ambig_to_regex("CTAACGTTGATGCTGCTCTG")
     cfaB_r = ambig_to_regex("TATGCGGCTGATGAAGGATC")

@@ -1,0 +1,82 @@
+## Introduction
+*Escherichia coli* is among the most widely studied organisms, and the species is very diverse [@lukjancenko_comparison_2010; @Selander1987].
+<!-- %In addition to being a member of the human gut microbiome, *E. coli* are found in soil, water, and livestock. The majority of lineages are harmless, but some can cause serious illness.  Thus, detecting and identifying the different lineages has remainedva valuable goal both for understanding the pathalogy as well as for detecting problematic strains. -->
+Because of this diversity, many methods have been developed to differentiate the different  *E. coli* lineages.  In 1987, Selandar  and colleagues used electrophoretic analysis of a 35 enzyme digest to classify the *E. coli* Reference Collection (ECOR) in 6 phylogenetic groups (A-F) [@Selander1987].  Clermont and colleagues published their triplex PCR method [@Clermont2000] of phylotyping, which proved to be an extremely valuable tool to differentiate groups A, B1, B2, and D.  In 2013, Clermont and colleagues published an update to this work, in which they showed that adding a 4th set of primers achieved higher resolution by expanded the method to detect groups E, F; additional primers were identified to differentiate the cryptic clades [@Clermont2013].  Most recently, the method was externed further to include a pair of primer to differentiate the new G phylogroup. This approach has been widely adopted as the method is reliable, easy to interpret, can correctly classify about 95\% of *E. coli* strains, and can be performed rapidly.
+
+Other typing schemes have been developed to classify *E. coli* strains. These include the Achtman 7 gene Multi Locus Sequence Typing (MLST)[@Achtman2012;@Alikhan2018], Michigan EcMLST [@Qi2004], whole-genome MLST (<http://www.applied-maths.com/applications/wgmlst>), core-genome MLST [@DeBeen2015], two-locus MLST[@Weissman2012], and ribosomal MLST [@Jolley2012]. All these sequencing-based methods classify *E. coli* with greater accuracy and granularity than PCR-based phylotyping, but at the cost of simplicity: in addition to not requiring seqeuncing, it is easier to discuss a small set of phylotypes compared to the results of typing methods aimed at capturing greater genomic diversity. As a result, the Clermont 2013 phylotyping scheme remains a popular tool for *E. coli* classification.
+
+We developed EzClermont to provide a simple *in silico* implementation of the Clermont phylotyping algorithm for genome assemblies. We have implemented the software as a web application and as a command-line tool for those needing to process large numbers of assemblies.
+
+## Methods
+### *In silico* PCR
+EzClermont software uses regular expressions to perform an *in silico* PCR, determining a phylotype according to the presence or absence of the alleles. As PCR primers do not necessarily need 100\% sequence homology to function, we determined the variability at the priming sites across a large set of strains. This set of strains was selected from enterobase in April, 2019; after filtering the metadata based on metadata quality and source, one representative of each sequence type was selected.  The list of 1395 isolates can be found in Supplementary File X; a detailed description and script of this filtering  procedure can be found at <link>.  These sequences provide  a broad overview of the genomic diversity in *E. coli*. From each assembly, we extracted the 7 regions matching the theoretical amplicons of the quadriplex, E-specific, C-specific, G-specific, and E/C control primer sets from @Clermont_2013 and @Clermont_2019 using a reciprocal BLAST approach, and alligned the regions with mafft using default parameters. Any differences between an assembly's sequence and the cannonical primer sequence were incorporated into the regular expressionin a manner akin to degenerate primer design. Differences occuring in the last 5 nucleotides on the 3’ regions were not incorporated, as those can be used to differentiate alleles [@Stadhouders2010].
+
+
+### Validation Dataset
+
+Determining the efficacy of our approach required a set of isolates with both experimentally-determined Clermont phylotypes and available whole-genome sequencing data. We built such a dataset from the strain described in @sims_wholegenome_2011, @clermont_guide_2015, and some of group G isolates from @clermont_characterization_2019 for which data was available. These 125 strains can be found in supplementary file XX. 
+
+The phylogeny of these strains were estimated by generating a whole-genome alignment with Parsnp in a manner comparable to that described by @clermont_characterization_2019.  PhyML [@guindon_new_2010] was used on the resulting nucleotide alignment using a HKY85 substitution model, bootstrapped with approximate Bayes support.  The ggtree [@yu_ggtree_2017] package was used to visualize the tree; the branches were rotated such that the branches representing the cryptic Escherichia are a
+
+
+### Comparison EzClermont to ClermonTypinng
+
+Both EzClermont (version 0.6.2) and ClermonTyping (version 1.4.1) were run with default parameters on the 125 strains in the validation dataset.
+
+
+### Implementation
+
+
+ 
+EzClermont is a Python package available on PyPI, conda, and GitHub.  The package consists of a commandline tool for batch execution, and a Flask-based webapp.  This webapp is also hosted on ezclermont.org, and a Docker container is avail for those 
+
+
+
+## Results
+Comparing the reported phylogroup and the EzClermont phylogroup for the 19 strains in @Sims2011 (excluding strains reported in both studies),  3 of the 19 did not agree (Table \@ref(tab:sims)). Two of those (IAI39, SMS-3-5) have been shown by other works to have the phylotype that EzClermont predicted. The one strain that typed differently (APEC01) was examined and was found to have the ArpA allele not normally detected in B2 strains. It unclear why this allele is not detected by traditional methods.
+
+### Performance on Validation set
+```{r}
+knitr::kable(
+  format = "markdown", escape = F, col.names = c( "Strain", "Assembly",  "Sims and Kim",  "EzClermont", " Notes")  , 
+  caption="Genes targetted by the Clermont 2013 quadruplex assay.",
+  read.table(
+    sep="\t",
+    text="
+APEC01\tGCA_003028815.1\tB2\tA\tfound arpA fragment                          \\
+IAI39\tGCA_000026345.1\tD\tF          & See Hazen 2017\cite{Hazen2017}; reported as phylogroup F     \\
+SMS-3-5 & GCA_000019645.1 & D            & F          & See Vangchhia 2016\cite{Vangchhia2016}; reported as phylogroup F
+"
+  )
+)
+```
+\begin{table}[h]
+\centering
+\caption{Comparing EzClermont to phylotypes reported by Sims and Kim 2011\cite{Sims2011}}
+
+  Strain  & Assembly         & Sims and Kim & EzClermont & Notes                                        \\
+  \hline
+APEC01  & GCA\_003028815.1 & B2           & A          & found arpA fragment                          \\
+IAI39   & GCA\_000026345.1 & D            & F          & See Hazen 2017\cite{Hazen2017}; reported as phylogroup F     \\
+SMS-3-5 & GCA\_000019645.1 & D            & F          & See Vangchhia 2016\cite{Vangchhia2016}; reported as phylogroup F
+\end{tabular}
+\end{table}
+
+
+
+We ran EzClermont on the 95 strains from Clermont, et al 2015 and compared the results to the reported phylotype; 89 of the 95 strains classifications matched.  To determine whether the inconsistent phylogroup assignments matched phylogeny, we then generated a parsimony tree using kSNP3 [@Gardner2015a], and plotted with ggtree [@Yu2017a]. This revealed that the EzClermont classification of ECOR46 (similar IAI39 and SMS-3-5) appears to match the true phylogeny, as opposed to the phylogroup reported in the literature (Figure \@ref(fig:cladogram)).  Of the remaining isolates that did not match, all detected at least one theoretical amplicon that was not reported to be there (Table S3). Further, a wide application of EzClermont by @zhou_users_2019 to representative *E. coli* strains in Enterobase was largely in agreement with both higher-resolution sequence typing and with ClermonTyping [@beghain_clermontyping:_2018], another *in silico* tool for detecting Clermont types.
+
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=.8\textwidth]{./analysis/cladogram.pdf}
+  \caption{ Parsimony cladogram of strains from Clermont et al 2015. Tree was generated with kSNP3 (k=19). Enlarged circular tips show where EzClermont differed from reported phylogroup (EzClermont type show in brackets).}
+  \label{fig:cladogram}
+\end{figure}
+
+### Assessing disparities
+
+Considering both the testing and validation datasets (114 strains), EzClermont has an accuracy of 94%. Given the ease of use of the web app for simple queries, its incorporation into Enterobase, and the standalone speed of execution for larger batches, we hope that EzClermont will be of continued use to the scientific community.
+
+
+

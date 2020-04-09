@@ -57,4 +57,4 @@ We then use `simpleOrtho.py` to find the reciprocal best match of that locus in 
 
 # Incorporating mismatches
 
-Then, inspect the MSAs by identifying the primer site and noting any  noting any ambiguities, and incorporate those into the primer matches in the `main()` method of the `run.py` script.  Ignore differences in the last 5 bases in the 3' end, as those are used to differentiate alleles in some cases.
+Then, inspect the MSAs by identifying the primer site and noting any  noting any ambiguities, and incorporate those into the primer matches in the `main()` method of the `run.py` script. Ignore differences in the last 5 bases in the 3' end, as those are used to differentiate alleles in some cases.
