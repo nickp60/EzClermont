@@ -118,8 +118,12 @@ SRR3923908
 ```
 ECOR="ECOR70"; SRA="SRR3923908"; rm -r ./${ECOR}/${SRA}_blob/; docker run --memory 10G --rm  -v $PWD:/inputdata/ nickp60/ezblobtools  -r /inputdata/BA000007.2.fasta -F /inputdata/${SRA}_1.fastq   -d ref_prok_rep_genomes -o /inputdata/${ECOR}/${SRA}_blob/ -t 2 -m 10
 ```
+Both tools type out as a C strain
+
+
 ## ECOR72
 SRR3923910
 ```
 ECOR="ECOR72"; SRA="SRR3923910"; rm -r ./${ECOR}/${SRA}_blob/; docker run --memory 10G --rm  -v $PWD:/inputdata/ nickp60/ezblobtools  -r /inputdata/BA000007.2.fasta -F /inputdata/${SRA}_1.fastq   -d ref_prok_rep_genomes -o /inputdata/${ECOR}/${SRA}_blob/ -t 2 -m 10
 ```
+Re-assemmbly types out as B1 with both tools

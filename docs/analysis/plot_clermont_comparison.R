@@ -79,15 +79,15 @@ labdf$matchsize <- ifelse(labdf$match,  1, 5)
 true_phy <- read.table(stringsAsFactors = F, header=T,sep=",", text="
 strain,Phylogeny,Note
 APEC01,A,arpA fragment found
-ECOR04,A,Conntaminated Assembly
+ECOR04,A,contaminated Assembly
 ECOR12,A,
 ECOR40,F,
 ECOR44,D, ArpA1_r mutationn position 17
-ECOR46,F/G,Contaminated assembly
+ECOR46,F/G,contaminated assembly
 ECOR51,B2,
 ECOR58,B1,
 ECOR70,C,
-ECOR72,B1,
+ECOR72,B1,contaminaed assembly
 SMS-3-5,F,reported as phylogroup F in  Vangchhia et al 2016
 ")
 
@@ -101,13 +101,13 @@ results_table <- labdf %>%
       "EzClermont"=ezClermont_phylogroup) %>%
     select(Accession,Strain, Reported, ClermonTyping, EzClermont) 
 
-View(left_join(results_table, true_phy, by=c("Strain"="strain")) %>% 
+dput(left_join(results_table, true_phy, by=c("Strain"="strain")) %>% 
        filter (Reported != EzClermont | 
                  Reported != ClermonTyping | 
                  EzClermont != ClermonTyping) %>%
   select(Strain, Accession, Reported, Phylogeny, ClermonTyping, EzClermont, Note) 
 )
-
+)
 
 colors = c(A="grey", B1="darkgreen", B2="purple",   C="orange", "Clade I"="yellow", "Cryptic"="yellow", "Clade II"="yellow", "Clade IV"="yellow", "Clade V"="yellow", D="red", E="green", F="steelblue", G="black", U="pink")
 
