@@ -24,24 +24,23 @@ The strains were unzipped if necessary and were then added to a `./genome_assemb
 
 ```
 mkdir ./genome_assemblies_genome_fasta/tmp/
-gunzip ./genome_assemblies_genome_fasta/ncbi-genomes-2020-04-06/GCA_00*
-for i in ./genome_assemblies_genome_fasta/ncbi-genomes-2020-04-06/*.gz ; do bas=$(filename $i) ; cat $i | gunzip > ./genome_assemblies_genome_fasta/tmp/${bas}.fasta ; done
+gunzip ./genome_assemblies_genome_fasta/ncbi-genomes-2020-04-09/GCA_00*
+for i in ./genome_assemblies_genome_fasta/ncbi-genomes-2020-04-09/*.gz ; do bas=$(filename $i) ; cat $i | gunzip > ./genome_assemblies_genome_fasta/tmp/${bas}.fasta ; done
 mv ~/Downloads/ESC_* ./genome_assemblies_genome_fasta/tmp/
 
 
-time for i in ./genome_assemblies_genome_fasta/tmp/*.fasta ; do nam=$(basename $i) ; cat $i ezclermont  - -e $nam >> 2020-04-07-ezclermont.txt; done
-# 3m57.222s
+time for i in ./genome_assemblies_genome_fasta/tmp/*.f*a ; do nam=$(basename $i) ; cat $i | ezclermont  - -e $nam >> 2020-04-09-ezclermont.txt; done
+#real    3m56.741s
 mkdir ct_results ; cd ct_results
-time for i in ../genome_assemblies_genome_fasta/tmp/*.fasta; do   ~/GitHub/ClermonTyping/clermonTyping.sh --fasta $i ; done
-# real    3m12.872s
-cat analysis_2020-04-07_15*/*phylogroups.txt > 2020-04-07-CT-results.txt
-
+time for i in ../genome_assemblies_genome_fasta/tmp/*.f*; do   ~/GitHub/ClermonTyping/clermonTyping.sh --fasta $i ; done
+# real    3m16.024s
+cat analysis_2020*/*phylogroups.txt > ../2020-04-09-CT-results.txt
 
 ```
 
 
 
-# Generating kmer-base phylogentic tree
+# Generating a maximum likelihood phylogentic tree
 
 
 ```
@@ -53,14 +52,14 @@ cat alignment/parsnp.msa | sed -e 's/^>\(.\{4\}\)\(.\{9\}\).*/>\2/'  > alignment
 python ~/GitHub/open_utils/frommsa/frommsa.py ~/GitHub/ezclermont/docs/analysis/validate/alignment/parsnp.clean.msa  > ~/GitHub/ezclermont/docs/analysis/validate/alignment/parsnp.clean.phy
 
 # version 3.3.20190909
-phyml -i ./alignment/parsnp.clean.phy~
+phyml -i ./alignment/parsnp.clean.phy
 ```
 
 # Plotting the results, etc
 The resulting files were then processed with the `plot_Clermont_comparison.R` script.
 
 
-# Addressing inconsistenties
+# Addressing inconsistenties in the PRJNA321606 assemblies
 ## ECOR-46
 As both ClermonTyping and EzClermont typed GCA_002191015.1 as "G", I checked whether the assembly could be at fault.  I found an additional assembly of ECOR46 in enterobase, ESC_HA7443AA_AS, which is the result of three SRAs: SRR3951511, SRR3987677, SRR4099204. This assembly types as a "D" strain.  Further, GCA_002191015.1 appears to have very poor assembly quality, with 2145 contigs falling below the 500bp default threshold.  It was based an another SRA, SRR3886568.
 
@@ -113,6 +112,8 @@ SRR3921609
 ```
 ECOR="ECOR51"; SRA="SRR3921609"; rm -r ./${ECOR}/${SRA}_blob/; docker run --memory 10G --rm  -v $PWD:/inputdata/ nickp60/ezblobtools  -r /inputdata/BA000007.2.fasta -F /inputdata/${SRA}_1.fastq   -d ref_prok_rep_genomes -o /inputdata/${ECOR}/${SRA}_blob/ -t 2 -m 10
 ```
+Both tools type out as a B2 strain, through EzClermont misses yjaA as it is on a small contig, so the minimum had to be reduced.  The strain shows contamination.
+
 ## ECOR70
 SRR3923908
 ```
@@ -127,3 +128,10 @@ SRR3923910
 ECOR="ECOR72"; SRA="SRR3923910"; rm -r ./${ECOR}/${SRA}_blob/; docker run --memory 10G --rm  -v $PWD:/inputdata/ nickp60/ezblobtools  -r /inputdata/BA000007.2.fasta -F /inputdata/${SRA}_1.fastq   -d ref_prok_rep_genomes -o /inputdata/${ECOR}/${SRA}_blob/ -t 2 -m 10
 ```
 Re-assemmbly types out as B1 with both tools
+
+
+# comparing two bioprojects
+
+```
+/Applications/Harvest-OSX64-v1.1.2/parsnp -c -d ./genome_assemblies_genome_fasta/tmp_combined/ -r !  -p 4 -o ./alignment_combined/
+```
