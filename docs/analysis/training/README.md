@@ -10,7 +10,7 @@ The initial analysis used the *E. coli*  genomes from the following bioprojects:
 - https://www.ncbi.nlm.nih.gov/bioproject/PRJNA231221/
 
 
-However, in order to ensure even representation, version 0.6 introduced primer training based on a subset of enterobase where a random isolate from each sequence type (as of mid-2019) was downloaded.
+However, in order to ensure even representation, version 0.6 introduced primer training based on a subset of enterobase where a random isolate from each sequence type (as of 2019-04-26) was downloaded.
 
 These 1395 strains were moved to  a folder called `combined`.  Because we need to have unique contig names when these are turnned into a blast database, the following command was run to rename the headers with the file prefix:
 

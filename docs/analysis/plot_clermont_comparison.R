@@ -49,7 +49,7 @@ library(ape)
 
 
 
-tree2 <- read.tree("./validate/kSNP_output_k19/tree_AlleleCounts.parsimony.tre")
+#tree2 <- read.tree("./validate/kSNP_output_k19/tree_AlleleCounts.parsimony.tre")
 tree <- read.tree("./validate/alignment/parsnp.clean.phy_phyml_tree.txt")
 
 # we had to triim the ma,e becuse of the Phylip format
@@ -59,7 +59,7 @@ tree$tip.label <- ifelse(
   paste0("GCA_", tree$tip.label))
 together$label <- substr(together$acc, 1, 13)
 
-labdf <- left_join(data.frame(label=tree$tip.label), together, by="label")
+labdf <- left_join(data.frame(label=tree$tip.label, stringsAsFactors = FALSE), together, by="label")
 #labdf$quardiplex_pcr_base_base <- ifelse(labdf$quardiplex_pcr_basemerge(data.frame(label=tree$tip.label), dat, by="label")
 
 # add labels for where ezclermont went wrong
@@ -117,7 +117,11 @@ dput(
 )
 
 
-colors = c(A="grey", B1="darkgreen", B2="purple",   C="orange", "Clade I"="yellow", "Cryptic"="yellow", "Clade II"="yellow", "Clade IV"="yellow", "Clade V"="yellow", D="red", E="green", F="steelblue", G="black", U="pink")
+colors = c(A="grey", B1="darkgreen", B2="purple",   
+           C="orange", "Clade I"="yellow", "Cryptic"="yellow",
+           "Clade II"="yellow", "Clade IV"="yellow", 
+           "Clade V"="yellow", D="red", E="green", 
+           F="steelblue", G="black", U="pink")
 
 # 
 # for ( i in 126:200){
