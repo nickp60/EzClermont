@@ -19,7 +19,7 @@ output:
      keep_tex: true
 editor_options:
   chunk_output_type: console
-bibliography: /Users/nick/GitHub/soil-persistent-ecoli/soil_persistent_ecoli.bib
+#bibliography: /Users/nick/GitHub/soil-persistent-ecoli/soil_persistent_ecoli.bib
 abstract: The Clermont PCR method of phylotyping *Escherichia coli* has remained a useful classification scheme despite the proliferation of higher-resolution sequence typing schemes. We have created an *in silico* Clermont PCR method implemented as both a web app and as a command-line tool to allow researchers to easily apply this phylotyping scheme to genome assemblies. EzClermont is available as a web app at  <http://www.ezclermont.org>.  For local use, EzClermont can be installed with pip or installed from the source code at <https://nickp60.github.io/EzClermont/>.  
 
 ---
@@ -70,7 +70,7 @@ EzClermont is a Python package available on PyPI, conda, and GitHub.  The packag
 Before addressing the performance of the *in silico* phylotypers, the experimentally-determined phylogroups must be confirmed with the maximum likelihood phylogeny.  Of the 125 strains assessed, seven of the reported phylogroup do not match.  Table 1 summarizes any disagreement between the literature reported phylotypes and that determined by maximum likelihood, ClermonTyping, or EzClermont. This could be for a number of reasons, including a strain being mislabelled, contamination, or a case where the Clermont quadruplex PCR does not accurately reflect the phylogeny.  In all cases, both *in silico* methods typed the strain in a manner matching the phylogeny, supporting the maximum likelihood phylogeny and suggesting that the integrity of the strain collection may have been compromised.  Indeed, comparing the two sequencing efforts revealed that at least in these two collections, the phylogentic identities of 12 of the 72 strains are not certain (Supplementary Figure \@ref(fig:bioproject-comparison)), and research labs may be refering to different strains by the same name. For assessing performance of the *in silico* tools, the phylogroup supported by the phylogeny was taken to be true, as we have no way of knowing the true identity of the strain on which the original Clermont PCR method was performed.
 
 ```{r tree-ez, fig.cap="Cladogram of phylogenetic relationships between members of the ECOR collection and select phylogroup G isolates from Clermont et al. 2019. Clades are coloured by phylogroup; the heatmap surrounding the tree shows the reported phylogroup, ClermonTyping phylogroup, and EzClermont phylogroup (inside to outside).  The reported phylogroup was not supported by the phylogeny in seven of the strains. Both EzClermont and ClermonTyping show agreement with the phylogeny in all but two cases: ECOR44 and ECOR49.", out.width="110%" }
-knitr::include_graphics(path =  "/Users/nick/GitHub/ezclermont/docs/analysis/cladogram.png")
+knitr::include_graphics(path =  "../analysis/cladogram.png")
 ```
 
 
@@ -119,12 +119,12 @@ As a python package, EzClermont is easy for developers to integrate into existin
 
 
 ```{r bioproject-comparison, fig.cap="A core-genome alignment of the assemblies from both ECOR collection sequencing projects was created with Parsnp.  The tip shapes indicate the sequencing project. (A) shows the core genome phylogeny, and (B) shows the same but with equal branch lengths to easier visualize closely-related strains. Yellow tips indicate strains for which the two BioProject's assemblies contradict.", out.width="110%" }
-knitr::include_graphics(path =  "/Users/nick/GitHub/ezclermont/docs/analysis/bioproject_comparison.png")
+knitr::include_graphics(path =  "../analysis/bioproject_comparison.png")
 ```
 
 
 ```{r tree-ez-phy, fig.cap="Maximum likelihood tree of core genome alignment showing the relationship of the isolates to their literature-reported and predicted phylotypes.  The cryptic clade isolates were omitted for clarity, and the tree was rerooted at the point where they diverged.", out.width="110%" }
-knitr::include_graphics(path =  "/Users/nick/GitHub/ezclermont/docs/analysis/tree.png")
+knitr::include_graphics(path =  "../analysis/tree.png")
 ```
 
 
