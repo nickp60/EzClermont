@@ -20,7 +20,7 @@ output:
 editor_options:
   chunk_output_type: console
 #bibliography: /Users/nick/GitHub/soil-persistent-ecoli/soil_persistent_ecoli.bib
-abstract: The Clermont PCR method of phylotyping *Escherichia coli* has remained a useful classification scheme despite the proliferation of higher-resolution sequence typing schemes. We have created an *in silico* Clermont PCR method implemented as both a web app and as a command-line tool to allow researchers to easily apply this phylotyping scheme to genome assemblies. EzClermont is available as a web app at  <http://www.ezclermont.org>.  For local use, EzClermont can be installed with pip or installed from the source code at <https://nickp60.github.io/EzClermont/>.  
+abstract: The Clermont PCR method for phylotyping *Escherichia coli* remains a useful classification scheme even though genome sequencing is now routine, and higher-resolution sequence typing schemes are now available. Relating preset-day whole-genome *E. coli* classifications to legacy phylotyping is essential for harmonising the historical literature and understanding of this important organism. We therefore present EzClermont - a novel *in silico* Clermont PCR phylotyping tool to enable ready application of this phylotyping scheme to whole genome assemblies. We evaluate this tool against phylogenomic classifications, and an alternative software implementation of Clermont typing. EzClermont is available as a web app at  <http://www.ezclermont.org>, and as a command-line tool at <https://nickp60.github.io/EzClermont/>.  
 
 ---
 ```{r, include=FALSE}
