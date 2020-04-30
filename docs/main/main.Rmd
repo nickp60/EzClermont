@@ -111,7 +111,7 @@ Both tools mistyped the same pair of isolates from the validation set. Incomplet
 
 However, the disagreement observed in this study between phylogenetic lineage and literature-reported phylotype for seven isolates reinforces that laboratory assays also share potential for error, and that these errors may be propagated in literature and metadata. Our comparison of sequencing efforts for the same isolates in two BioProjects implies that, at least in these two collections, the phylogenetic identities of 12 of the 72 strains were not certain (Supplementary Figure \@ref(fig:bioproject-comparison)). Such issues may lead to groups referring to distinct strains by the same name. We found that application of the *in silico* tools was able to correct misassigned phylotype for seven isolates.
 
-EzClermont is implemented as an aplication and as a Python package, for developers to integrate into existing and new pipelines. It is also presented as a web appplication with an intuitive interface for simple queries. We hope that the incorporation of EzClermont into EnteroBase [@zhou_user_2019], and the utility of applying the local program to large batches of genomes, mean that it will be of continued use to the scientific community.
+EzClermont is implemented as an aplication and as a Python package, and works with STDIN/STOUT for developers to integrate into unix pipelines. It is also presented as a web appplication with an intuitive interface for simple queries. We hope that the incorporation of EzClermont into EnteroBase [@zhou_user_2019], and the utility of applying the local program to large batches of genomes, mean that it will be of continued use to the scientific community.
 
 
 ## Supplementary Figures {-}
