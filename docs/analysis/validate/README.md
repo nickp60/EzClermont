@@ -29,11 +29,19 @@ for i in ./genome_assemblies_genome_fasta/ncbi-genomes-2020-04-09/*.gz ; do bas=
 mv ~/Downloads/ESC_* ./genome_assemblies_genome_fasta/tmp/
 
 
+
+
+mkdir timings
+for j in {1..5}; do for i in ./docs/analysis/validate/genome_assemblies_genome_fasta/tmp/*.f*a ; do nam=$(basename $i) ;  { time ~/GitHub/ClermonTyping/clermonTyping.sh --fasta $i  2> ct.stderr ; }  2>> timing/clermonTyping ; done; done
+for j in {1..5}; do for i in ./docs/analysis/validate/genome_assemblies_genome_fasta/tmp/*.f*a ; do nam=$(basename $i) ;  { time ezclermont  $i -e $nam >> tmp-ezclermont.txt  2> ezcler.stderr ; }  2>> timing/ezclermont ; done; done
+
+
 time for i in ./genome_assemblies_genome_fasta/tmp/*.f*a ; do nam=$(basename $i) ; cat $i | ezclermont  - -e $nam >> 2020-04-09-ezclermont.txt; done
-#real    3m56.741s
+# real    3m56.741s
 mkdir ct_results ; cd ct_results
 time for i in ../genome_assemblies_genome_fasta/tmp/*.f*; do   ~/GitHub/ClermonTyping/clermonTyping.sh --fasta $i ; done
 # real    3m16.024s
+
 cat analysis_2020*/*phylogroups.txt > ../2020-04-09-CT-results.txt
 
 ```
