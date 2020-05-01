@@ -89,7 +89,7 @@ Both EzClermont (version 0.6.2) and ClermonTyping (version 1.4.1) were run with 
 
 ### Implementation {-}
 
-EzClermont is an open-source Python package distributed under the MIT License, available *via* PyPI (<https://pypi.org/project/ezclermont/>), conda, and GitHub (<https://github.com/nickp60/ezclermont>). Biopython is utilized for the parsing sequences [@cockBiopythonFreelyAvailable2009]. The package comprises a command-line tool for batch execution, and a Flask-based webapp. The webapp is hosted as a live service at <http://ezclermont.org>, and a Docker container is available at <https://hub.docker.com/r/nickp60/ezclermont> for local deployment.
+EzClermont is an open-source Python package distributed under the MIT License, available *via* PyPI (<https://pypi.org/project/ezclermont/>), conda, and GitHub (<https://github.com/nickp60/ezclermont>). Biopython is utilized for parsing sequences [@cockBiopythonFreelyAvailable2009]. The package comprises a command-line tool for batch execution, and a Flask-based webapp. The webapp is hosted as a live service at <http://ezclermont.org>, and a Docker container is available at <https://hub.docker.com/r/nickp60/ezclermont> for local deployment.
 
 ### Performance {-}
 
