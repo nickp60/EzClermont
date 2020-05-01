@@ -34,7 +34,7 @@ do
         # get the sequence of the othologs
         ~/GitHub/open_utils/extractRegion/extractRegion.py -l ./$OUTDIR/${REG}_out/simpleOrtho_regions.txt -f ./combined.fasta > $OUTDIR/${REG}_regions.fasta
         # align all those
-        mafft --adjustdirection --thread 4 ./$OUTDIR/${REG}_regions.fasta > ./$OUTDIR/${REG}_regions_aligned.fasta
+        mafft  --adjustdirection --thread 4 ./$OUTDIR/${REG}_regions.fasta > ./$OUTDIR/${REG}_regions_aligned.fasta
         # get rid of big temp files
         rm $OUTDIR/${REG}_out -rf
     fi
