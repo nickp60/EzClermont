@@ -1,0 +1,494 @@
+
+```{r setup01, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(ggridges)
+source("shared_functions.R")  
+
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  library(grid)
+  
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+  
+  numPlots = length(plots)
+  
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                     ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+  
+  if (numPlots==1) {
+    print(plots[[1]])
+    
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+    
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+      
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
+}
+
+
+```
+
+# Assessing Enterobase Metadata {#eb-metadata}
+
+Comparing the soil-persistent *E. coli* collection to the wider group of *E. coli* requires a representative comparison dataset. To this aim, I used the Enterobase database to get the metadata associated with hundreds of thousands of sequenced _E. coli_, and filtered the number to a representative but tractable number of candidate strains to maximize the quality and diversity of the available data. 
+
+## The Input Data
+
+To get the metadata, go to Enterobase, select the "E. coli" database, and search for "All Strains". This was done on 2019-04-19.  I created an addtional data "View" that includes the Achtman 7 gene ST predictions, all the Assembly statistics, Fim types, Clermont Types.  Using the link to download all the strains, which will download two files, one for the metadata and one for any that gave errors because, for instance, the metadata is available but the sequence data has not been made public yet.  I excluded those strains identified by Enterobase as having problematic metadata.
+
+```{bash eval=FALSE}
+mv ~/Downloads/all_strains* ./raw/
+```
+
+```{r}
+#The data has a really strange 3rd column, for whatever reason, so I rename that column on the way in:
+enterodir <- "Chapter-enterobase-comparison-strains"
+raw <- read.csv2(file.path(enterodir, "./raw/all_strains.txt"), sep="\t", stringsAsFactors = F) %>% 
+  rename(messycol = 3)
+log <- data.frame("Step" = "Raw", "N"=nrow(raw))
+```
+
+## Filtering the Data
+### Assembly Status 
+Lets take an initial look at the `Status` of the assemblies:
+
+```{r raphics, echo=FALSE}
+ggplot(raw, aes(Status.Assembly.stats., fill=Status.Assembly.stats.)) + 
+  geom_histogram(stat="count") + 
+  scale_fill_discrete(guide=F) + 
+  labs(title=paste0("Status of ", nrow(raw), " datasets in Enterobase"), 
+       subtitle="2019-04-19") + mytheme(base_font_size = 10)
+  
+```
+I can start by excluding all the legacy data. These are generally ones for which WGS data is not available, just the Achtman 7 gene MLST sequences.
+
+Additionally, 83 of the eentries had  `NaN` for the Length, N50, and all the other quantitative assembly columns. I removed those, as I can find no reason for the lack of data, and don't have time to troubleshoot this.  I also removed the unreleased ones by filtering out those with a release date in the future. 
+
+```{r}
+cleaned <- raw %>% filter(Status.Assembly.stats. == "Assembled")
+log <- rbind(log, data.frame(Step="Assembled", N=nrow(cleaned)))
+cleaned <- cleaned %>% filter(as.Date(Release.Date) < as.Date("2019-04-19")) 
+log <- rbind(log, data.frame(Step="Currently released", N=nrow(cleaned)))
+
+```
+
+### Genome Size: Shigella and the case of the short genomes 
+Next, I considered the length of the genomes.  Some had an assembly length of 0, and I excluded those.  Plotting the assembly lengths revealed a decently tight distribution of lengths, with few outliers (Figure \@ref(fig:eb-genome-lens)). Enterobase automatically removes any with a length less than 3.7Mb or greater than  6.4Mb, as those are unlikely to be *E. coli*^[ <https://enterobase.readthedocs.io/en/latest/pipelines/backend-pipeline-qaevaluation.html>]. 
+
+```{r eb-genome-lens}
+#install.packages("ggridges")
+# cleaned %>% filter(is.na(Length)) %>% View()
+cleaned <- cleaned %>% filter(!is.na(Length.Assembly.stats.))  %>% filter(Length.Assembly.stats. != 0)
+log <- rbind(log, data.frame(Step="With Non-zero Length", N=nrow(cleaned)))
+
+ggplot(cleaned, aes(Length.Assembly.stats.)) +
+  geom_histogram() + 
+  labs(title=paste0("Lengths of the ", nrow(cleaned), " genomes in Enterobase")) + 
+  geom_vline(aes(xintercept=mean(cleaned$Length.Assembly.stats.))) + 
+  scale_y_log10() + 
+  annotate("text", x = 4700000, y= 16000, label=paste("Mean:", round(mean(cleaned$Length.Assembly.stats.), 2))) + mytheme(base_font_size = 10)
+
+```
+
+Closer inspection showed that the short ones (~3.7Mb) were frequently classed as Shigella.  I can plot that above data separated by species or genus.
+
+```{r}
+cleaned$simple_species <- gsub("(\\S)(\\S*?)\\s(.{,3}).*", "\\1 \\3", 
+                               gsub("  ", " ", gsub("^\\s", "", cleaned$Species)))
+ggplot(cleaned %>% 
+         filter(simple_species != "") %>%  
+         filter(!grepl("sp", simple_species)), 
+       aes(Length.Assembly.stats., fill=simple_species)) +
+  geom_density(alpha=.5) + 
+  labs(title=paste0("Lengths of the ", nrow(cleaned), " genomes in Enterobase"),
+       subtitle="Distribution by species") 
+# ggplot(cleaned %>% 
+#         filter(simple_species != "") %>%  
+#          filter(Length.Assembly.stats. < 4500000), 
+#        aes(Length.Assembly.stats., fill=simple_species)) +
+#   geom_density() + 
+#   #scale_fill_grey() +
+#   # scale_y_log10() +
+#   labs(title=paste0("Lengths of the ", nrow(cleaned), " genomes in Enterobase")) 
+ggplot(cleaned %>% 
+        filter(simple_species != "") %>%  
+        mutate(genus = gsub("(.)(.*)", "\\1", simple_species)), 
+       aes(Length.Assembly.stats., fill=genus)) +
+  geom_density(alpha=.5) + 
+  scale_x_continuous(breaks=seq(3500000,6500000, 1000000)) +
+  labs(title=paste0("Lengths of the ", nrow(cleaned), " genomes in Enterobase"),
+       subtitle="Distribution by genus") 
+
+```
+
+Whether Shigella is a thing or not is debate for some in the community, but here I do see a fairly marked difference in genome size.  
+
+I have the Clermont types for some, and this shows a similar picture:
+
+```{r}
+ggplot(cleaned %>% filter(!ezClermont %in% c("", "EC_control_fail")),
+       aes(y=ezClermont, x=Length.Assembly.stats.)) + 
+  geom_density_ridges()
+
+
+```
+
+The tails belong to the un-clemontable!  The U(nknown) clermont types have big outliers in the distribution.
+
+Based on this, seems sensible to remove genomes falling outside of the bulk of the E. coli genome sizes, excluding the peak of genome sizes that occurs when the genus overlaps around 4.5Mb.  But would that bias against our genomes of interest?
+
+```{bash eval=FALSE}
+wc -c /mnt/shared/scratch/nw42839/2017-04-27-SPAdes-assemblies/Lys*/contigs.fasta | cut -f 3 -d" " | head -n-1 |hist -s 10
+
+ 55|    o
+ 49|    o
+ 43|    o
+ 37|    o
+ 31|    o
+ 25|   ooo
+ 19|   ooo
+ 13|   ooo
+  7|  ooooo
+  1| oooooooo  o
+    -----------
+
+----------------------------------
+|            Summary             |
+----------------------------------
+|       observations: 149        |
+|   min value: 4751433.000000    |
+|     mean : 5172108.073826      |
+|   max value: 6175311.000000    |
+----------------------------------
+```
+
+Our smallest soil genome has a size of approximately (cause this includes header characters) 4.7MB.   
+
+So, I chose to retain genomes over 4.65Mb.
+
+```{r}
+ggplot(cleaned %>% 
+        filter(simple_species != "") %>%  
+        mutate(genus = gsub("(.)(.*)", "\\1", simple_species)), 
+       aes(Length.Assembly.stats., fill=genus)) +
+  geom_density(alpha=.5) + 
+  scale_x_continuous(breaks=seq(3500000,6500000, 1000000)) +
+  geom_vline(xintercept = 4650000, color="purple", size=1) +
+  labs(title=paste0("Lengths of the ", nrow(cleaned), " genomes in Enterobase"),
+       subtitle="Retaining genomes to the right of the purple line") 
+
+cleaned <- cleaned %>% filter(!is.na(Length.Assembly.stats.))  %>% filter(Length.Assembly.stats. > 4650000)
+log <- rbind(log, data.frame(Step="Length > 4.65Mb", N=nrow(cleaned)))
+
+```
+
+### Removing the Cryptic Clades (or rather the associated MLSTs)
+
+
+For this analysis, I chose to remove any members of the cryptic clades.  To determine which ones to exlude, I decided to look at which MLST groups seem to be most associated with the mlst groups.  
+
+For a small proportion of the dataset, the clermont type was determined with either ezClermont or ClermontTyper. This feature was added relatively recently, which is why I dont have the info for all the strains in the dataset.
+
+So I calculated which MLST types were enriched for "crypticness", in the subset of the data that had actually been labeled with Clermont types:
+
+```{r}
+
+stsum <- 
+  cleaned %>% 
+  filter(ezClermont != "" | ClermontTyping != "" ) %>%
+  mutate(cryptic=grepl("ryptic", ezClermont) | grepl("clade", ClermontTyping)) %>%
+  group_by(ST.Achtman.7.Gene.MLST.) %>%
+  summarise(prop = sum(cryptic, na.rm = TRUE)/n()) %>% as.data.frame()
+
+ggplot(stsum, aes(prop)) + geom_histogram() +  
+  labs(Title = "Proportion of Cryptic-Labeled isolates", x="Proportion of Cryptic strains in a Sequence Type") 
+```
+
+Most of the MLST groups had no cryptic members. 
+
+I chose to set a threshold of 5%; if over that, I deemed it to be suspect enough to exclude members from that MLST group.
+
+```{r}
+ggplot(stsum %>% filter(prop > 0), aes(x=reorder(as.character(ST.Achtman.7.Gene.MLST.),prop), y=prop)) + coord_flip() + geom_point(alpha=.4) + geom_hline(yintercept = .05, color="purple", size=1) + labs(subtitle="MLST types with a proportion of crryptic clade  greater than .2 \nwere removed from the analysis.")
+
+cryptic_mlsts <- unique(stsum[stsum$prop >.05, "ST.Achtman.7.Gene.MLST."])
+cleaned <- cleaned %>% filter(!ST.Achtman.7.Gene.MLST. %in% cryptic_mlsts)
+log <- rbind(log, data.frame(Step="Not Cryptic", N=nrow(cleaned)))
+
+```
+
+### Genome Base Quality
+I have a wide range of quality of the assemblies (with some assemblies being called entirely low-quality):
+
+
+```{r}
+ggplot(cleaned, aes(Low.Quality.Bases.Assembly.stats.)) + 
+  geom_histogram() + 
+  labs(title="Low quality bases")
+ggplot(cleaned %>% filter(Low.Quality.Bases.Assembly.stats./Length.Assembly.stats. < .1),  
+       aes(Low.Quality.Bases.Assembly.stats.)) + 
+  geom_histogram() + 
+  labs(title="Low quality bases (No extreme outliers)")
+ ggplot(cleaned %>% filter(Low.Quality.Bases.Assembly.stats./Length.Assembly.stats. < .1),
+        aes(100 - 100 *Low.Quality.Bases.Assembly.stats./Length.Assembly.stats.)) + 
+  geom_histogram() +
+  labs(title="Percent High quality Bases", x="Percent high quality bases")
+
+cleaned <- cleaned %>% filter((Low.Quality.Bases.Assembly.stats./Length.Assembly.stats.) < .002)
+log <- rbind(log, data.frame(Step="> 99.8% high quality", N=nrow(cleaned)))
+
+
+```
+
+Because sequencing errors will affect the allele calling at just about every stage in downstream analysis, I filter to retain datasets with > 99.8% high quality bases. That may seem stringent, but .2% error over 5Mb is still 10K SNPs, so if anything, its not stringent enough.
+
+
+###  Filtering Metadata
+
+Then, I start the metadata filtering process; this is to reduce the likelihood of including soil-persistent strains in out comparison set.  
+
+I remove
+
+- anything from the `Source.niche` that is blank, "ND", Laboratory, "Environment".  
+- anything unavailable (release date in the future)
+- anything with missing provenance (no `Source.Type` and `Source.Details`)
+
+
+```{r}
+# messycolnames = c("Data.Source.Accession.No..", "Sequencing.Platform.", 
+#           "Sequencing.Library..", "Insert.Size.","Experiment.Status.")
+# cleaned <- raw %>% rename(messycol = 3) %>% separate(messycol, into = messycolnames,  sep=";")
+
+cleaned <- cleaned %>%
+  filter(!Source.Niche %in% c("", "ND", "Laboratory", "Environment","Aquatic"))
+log <- rbind(log, data.frame(Step="Appropriate Niche", N=nrow(cleaned)))
+
+cleaned <- cleaned %>% filter(!Source.Type == "" & !Source.Details == "" )
+cleaned <- cleaned %>% filter(!Source.Type == "ND" & !Source.Details == "ND" )
+log <- rbind(log, data.frame(Step="Valid Source", N=nrow(cleaned)))
+
+```
+
+### Filtering from Species Assignment
+Lastly for  the filtering, lets address how many strains are actually E. coli.  
+
+https://enterobase.readthedocs.io/en/latest/pipelines/backend-pipeline-qaevaluation.ht
+
+I took a look at the precentage of the reads that were E. coli. Enterobase reject assemblies where >20% of the contigs arent E coli,  but looking at the pervent of the reads? that are E. coli, I see that some low-quality datasets seem to be sneaking in.
+ 
+Addiionally some of the strains aren't even E. coli, and are instead Escherichia species or shigella, or left blank.  I selected only the True *E. coli* for this comparison.
+ 
+
+```{r}
+table(cleaned$Species)
+
+##################################3 Filter out dodgey strains
+cleaned$percent_coli_shew <- as.numeric(
+  gsub("(.*?)(\\d*\\.\\d*)%", "\\2", cleaned$Species.Assembly.stats.))
+
+ggplot(cleaned, aes(percent_coli_shew)) + 
+  geom_histogram() + 
+  labs(title="Kraken's percentage of dataset that is actually E. coli (or Shigella)", 
+       subtitle="Pre-filtering")
+
+cleaned <- cleaned %>% filter(percent_coli_shew > 85)
+log <- rbind(log, data.frame(Step="Over 85% E coli", N=nrow(cleaned)))
+
+cleaned <- cleaned %>% filter(Species == "Escherichia coli")
+# this line gets rid of a fergasoni strain
+cleaned <- cleaned %>% filter(grepl("Escherichia coli", Species.Assembly.stats.))
+log <- rbind(log, data.frame(Step="E coli species", N=nrow(cleaned)))
+ggplot(cleaned, aes(percent_coli_shew)) + 
+  geom_histogram() + 
+  labs(title="Kraken's percentage of dataset that is actually E. coli (or Shigella)",
+       subtitle="Pre-filtering")
+
+#cleaned <-cleaned %>%
+#  filter(ST.Achtman.7.Gene. > 0) %>% # why would they be negative?
+#  filter(grepl("coli", Species.Assembly.stats.)) %>% # some say albertii, etc
+#  filter(percent_coli_shew > 95) %>% # And I'm being generous
+#  as.data.frame()
+
+```
+
+This brings our total down to `r nrow(cleaned)`.  Next, I had a regex rodeo to wrangle some categories for the metadata:
+
+```{r}
+
+cleaned$IS_WILDANIMAL <- ifelse(
+  grepl("wild", cleaned$Source.Niche, ignore.case = T), 1, 
+  ifelse(grepl("deer|Odocoileus|fox", cleaned$Source.Details, ignore.case = T), 1, 0))
+cleaned$IS_COMPANION <- ifelse(
+  grepl("dog|canis|cat[^tle|us]|feline|canine", cleaned$Source.Details, ignore.case = T), 1, 
+  ifelse(grepl("canine|feline", cleaned$Source.Type, ignore.case = T), 1, 0))
+
+cleaned$IS_LIVESTOCK <- ifelse(
+  grepl("cow|bovine|taurus|calf|cattle|steer|porcine|pig|scrofa|swine|sheep|^ovine|equine|caballus|chicken|gallus|duck|goat|turkey", cleaned$Source.Details, ignore.case = T), 1,
+        ifelse(grepl("swine|bovine", cleaned$Source.Type, ignore.case = T) &
+                 !grepl("beef", cleaned$Source.Type, ignore.case = T), 1,0))
+cleaned$IS_FOOD <- ifelse(
+  cleaned$Source.Niche =="Food" & cleaned$Source.Type != "ND" & cleaned$Source.Details != "ND", 1, 
+  ifelse(grepl("pork|beef|breast|veal|packaged|ground\\sturkey|meat|flour", cleaned$Source.Details,
+        ignore.case = T), 1,0))
+cleaned$IS_HUMAN <- 
+  ifelse(grepl("human|sapiens", cleaned$Source.Details, ignore.case = T), 1,
+         ifelse(grepl("human|sapiens", cleaned$Source.Niche, ignore.case = T), 1,0))
+cleaned$IS_OTHER <- ifelse(
+  !cleaned$IS_HUMAN & !cleaned$IS_WILDANIMAL & !cleaned$IS_LIVESTOCK &  
+    !cleaned$IS_COMPANION & !cleaned$IS_FOOD, 1, 0)
+## View the entries with more than one hit
+# View(cleaned[rowSums(cleaned[,grepl("IS", colnames(cleaned))]) != 1, grepl("IS|^Source", colnames(cleaned))])
+## View all
+#View(cleaned[, grepl("IS|^Source", colnames(cleaned))])
+## View all uncatagorized entry
+#View(cleaned[cleaned$IS_OTHER==1, grepl("IS|^Source", colnames(cleaned))])
+
+```
+
+
+Next, I tried to simplify the labels.  For those that had multiple, `IS_FOOD` label overruled others, and `IS_WIDANIMAL` overruled all.  This is because those vocabularies are the most specific.
+
+```{r}
+#####################################
+
+cleaned$source <- NA
+for (col in colnames(cleaned)[grepl("IS_", colnames(cleaned))]){
+  cleaned$source <- ifelse(cleaned[, col] == 1, col, cleaned$source)
+}
+# override livestock hit if it is a food
+cleaned$source <- ifelse(cleaned$IS_FOOD, "IS_FOOD", cleaned$source)
+# override entries with wild animal if appropriate
+cleaned$source <- ifelse(cleaned$IS_WILDANIMAL, "IS_WILDANIMAL", cleaned$source)
+
+table(cleaned$source)
+ggplot(cleaned, aes(source)) + 
+  geom_histogram(stat="count") + 
+  scale_y_continuous(limits = c(0, 12000)) +
+  geom_text(stat='count',aes(label=..count..),hjust=-.5) +
+  coord_flip()
+
+# chekck for duplicates
+unique_cols <- colnames(cleaned)[grepl("ID", colnames(cleaned))]
+table(duplicated(cleaned[,!colnames(cleaned) %in% c("Uberstrain", "Name", "Barcode", "N50.Assembly.stats.", "Length.Assembly.stats.", "Species.Assembly.stats.", "Contig.Number...200.bp..Assembly.stats.", "Low.Quality.Bases.Assembly.stats.", "Assembly.barcode.Assembly.stats.", "Data.Source.Accession.No","Experiment.Status",   unique_cols) ]))
+```
+
+I still have `r nrow(cleaned)` genomes to choose from. The subsampling heuristic I decided on was to sample a single representative from each Achtman 7 gene sequence type.
+
+
+```{r}
+ggplot(cleaned %>% group_by(ST.Achtman.7.Gene.MLST.) %>% summarize(n=n()), aes(n)) + geom_density() + scale_x_log10()
+
+set.seed(27)
+refact_rare <- cleaned %>%
+  group_by(ST.Achtman.7.Gene.MLST.) %>%
+  #filter(n() > 1) %>%
+  sample_n(1) %>%
+  as.data.frame()
+
+ggplot(refact_rare, aes(Length.Assembly.stats.)) + 
+  geom_histogram() +
+  stat_function(fun = dnorm, 
+                args = list(
+                  mean = mean(refact_rare$Length.Assembly.stats.), 
+                  sd = sd(refact_rare$Length.Assembly.stats.)))
+ ggplot(refact_rare ,
+        aes(100 - 100 *Low.Quality.Bases.Assembly.stats./Length.Assembly.stats.)) + 
+  geom_histogram() +
+  labs(title="Percent High quality Bases", x="Percent high quality bases")
+ ggplot(refact_rare,
+        aes(percent_coli_shew)) + 
+  geom_histogram() +
+  labs(title="Species assignment from Subset", x="Percent E. coli/Shigella from Kraken")
+
+```
+
+```{r}
+log <- rbind(log, data.frame(Step="Sample each MLST", N=nrow(refact_rare)))
+
+sumdf <- rbind(
+  refact_rare %>% group_by(source) %>% summarize(Count=n(), perc=100*(n()/nrow(refact_rare))) %>% mutate(label="Subset"),
+  cleaned %>% group_by(source) %>% summarize(Count=n(), perc=100*(n()/nrow(cleaned))) %>% mutate(label="All")
+  
+)
+(all <- ggplot(sumdf, aes(x=gsub("IS_", "", source),y=perc, fill=source)) + 
+  geom_bar(stat="identity") + 
+    scale_fill_discrete(guide=F) +
+    facet_grid(~label) +
+    geom_text(aes(label=round(Count, 1)),vjust=-1) + 
+#  scale_y_continuous(limits = c(0, 12000)) +
+    labs(x="Source", title="All Source-Annotated Enterobase")) 
+
+(all_alt <- ggplot(sumdf, aes(x=label,y=perc, fill=gsub("IS_", "", source))) + 
+  geom_bar(stat="identity", position = "stack") +
+    coord_flip() + 
+    theme(legend.position = "top")+
+    #facet_grid(~label) +
+    #geom_text(aes(y=perc, label=round(Count, 1)),vjust=-1) + 
+#  scale_y_continuous(limits = c(0, 12000)) +
+    labs(x="Source", title="All Source-Annotated Enterobase", fill="Origin")) 
+
+# cleaned$label <- "TOTAL"
+# refact_rare$label <- "SAMPLED"
+# (all <- ggplot(cleaned, aes(x=gsub("IS_", "", source), fill=source)) + 
+#   geom_histogram(stat="count") + 
+#     scale_fill_discrete(guide=F) +
+#     geom_text(stat='count',aes(label=..count..),vjust=-1) + 
+# #  scale_y_continuous(limits = c(0, 12000)) +
+#     labs(x="Source", title="All Source-Annotated Enterobase")) 
+# 
+# (sampled <- ggplot(data=refact_rare, aes(x=gsub("IS_", "", source), fill=source)) + 
+#     geom_histogram( stat="count") + 
+#     scale_fill_discrete(guide=F) +
+#     geom_text(data=refact_rare, stat='count',aes(label=..count..),vjust=-1) + 
+# #  scale_y_continuous(limits = c(0, 900)) +
+#     labs(x="Source", title="Single ST Subset of  Source-Annotated Enterobase")) 
+# 
+log$Step = with(log, reorder(Step, N))
+(filtering_plot <- ggplot(log, aes(x = Step, y=N, fill=Step)) +
+  scale_fill_discrete(guide=F) + 
+    geom_bar(stat="identity") + coord_flip() + 
+    geom_text(stat='identity', aes(label=N, y=10000),xjust=-1)
+)
+dir.create("./figures", showWarnings = F)
+dir.create("./results", showWarnings = F)
+
+ggsave(filtering_plot, filename = "./figures/filtering_plot.pdf", units = "in", width = 7.5, height = 4)
+
+# ggsave(multiplot(all, sampled, cols=1), filename = "figures/enterobase_subset.pdf", units = "in", width = 7.5, height = 4)
+ggsave(multiplot(all, all_alt, cols=2), filename = "figures/enterobase_subset.pdf", units = "in", width = 15, height = 8)
+
+
+```
+
+The total number of seqeunces left was `r nrow(refact_rare)`.  Two of these were later removed due to typing out as cryptic clades during the phylogenetic analysis described in Chapter \ref(ebdiversity), resulting in a final dataset of 1395 strains.
+
+
+And I save the data in two forms: the table with all the metadata, and a file to be used in our script to fetch the actual sequences with the Enterobase API.
+
+```{r, eval=FALSE}
+write.table(refact_rare$Barcode,"results/enterobase_subset_barcodes.txt", row.names = F, quote = F, col.names = F)
+write.table(refact_rare, "results/enterobase_subset_metadata.tab", row.names = F, quote = F, col.names = T, sep="\t")
+```
+
+
+## Fetching the data
+The data were downloaded with the EnteroBase API using a script which can be found in `scripts/fetchEnterobaseAssemblyBatch.py`.
+```{bash, eval=F}
+python scripts/fetchEnterobaseAssemblyBatch.py -b ./results/enterobase_subset_barcodes.txt -o ./2019-04-19-enterobase_subset/ -v
+```

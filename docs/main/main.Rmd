@@ -1,14 +1,10 @@
 ---
-title: 'this is manually overridden'
+title: 'Easily phylotyping *E. coli* via the EzClermont web app and command-line tool'
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 toc: false
 fontsize: 10pt
 papersize: a4
 geometry: margin=2cm
-#     - \usepackage{setspace}
-#     - \doublespacing
-#     - \usepackage{lineno}
-#     - \linenumbers
 header-includes:
   - \usepackage{float}
   - \title{\fontseries{m}\selectfont Easily phylotyping \textit{E. coli} via the EzClermont web app and command-line tool.}
@@ -17,15 +13,17 @@ output:
   bookdown::pdf_document2:
      fig_caption: true
      keep_tex: true
+  word_document:
+     fig_caption: true
 editor_options:
   chunk_output_type: console
-#bibliography: /Users/nick/GitHub/soil-persistent-ecoli/soil_persistent_ecoli.bib
-abstract: The Clermont PCR method for phylotyping *Escherichia coli* remains a useful classification scheme even though genome sequencing is now routine, and higher-resolution sequence typing schemes are now available. Relating preset-day whole-genome *E. coli* classifications to legacy phylotyping is essential for harmonising the historical literature and understanding of this important organism. We therefore present EzClermont - a novel *in silico* Clermont PCR phylotyping tool to enable ready application of this phylotyping scheme to whole genome assemblies. We evaluate this tool against phylogenomic classifications, and an alternative software implementation of Clermont typing. EzClermont is available as a web app at  <http://www.ezclermont.org>, and as a command-line tool at <https://nickp60.github.io/EzClermont/>.
-
+bibliography: /Users/nick/GitHub/soil-persistent-ecoli/soil_persistent_ecoli.bib
+abstract: The Clermont PCR method for phylotyping *Escherichia coli* remains a useful classification scheme even though genome sequencing is now routine, and higher-resolution sequence typing schemes are now available. Relating present-day whole-genome *E. coli* classifications to legacy phylotyping is essential for harmonising the historical literature and understanding of this important organism. We therefore present EzClermont - a novel *in silico* Clermont PCR phylotyping tool to enable ready application of this phylotyping scheme to whole genome assemblies. We evaluate this tool against phylogenomic classifications, and an alternative software implementation of Clermont typing. EzClermont is available as a web app at  <http://www.ezclermont.org>, and as a command-line tool at <https://nickp60.github.io/EzClermont/>.
 ---
 ```{r, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
 #knitr::opts_chunk$set(fig.pos = 'H')
+builddir=".."
 library(tidyverse)
 library(kableExtra)
 ```
@@ -34,7 +32,7 @@ library(kableExtra)
 <!-- %In addition to being a member of the human gut microbiome, *E. coli* are found in soil, water, and livestock. The majority of lineages are harmless, but some can cause serious illness.  Thus, detecting and identifying the different lineages has remainedva valuable goal both for understanding the pathalogy as well as for detecting problematic strains. -->
 In 1987, Selandar  and colleagues first used electrophoretic analysis of a 35 enzyme digest to classify the *E. coli* Reference Collection (ECOR) into 6 groups (A-F) [@selander_genetic_1987].  Subsequently, Clermont & colleagues published a triplex PCR method for phylotyping, able to differentiate four of these groups - A, B1, B2 and D [-@clermont_rapid_2000].  In 2013, Clermont and colleagues updated this scheme, adding a fourth set of primers to detect groups E and F; additional primers were also proposed to differentiate the cryptic clades [@clermont_clermont_2013]. This method was again recently extended to include primers that differentiate the newly-identified G phylogroup [@clermont_characterization_2019]. The Claremont quadruplex primers have been widely adopted for laboratory-based classification as the method is reliable, easy to interpret, and correctly classifies about 95\% of *E. coli* strains.
 
-Other typing schemes developed to classify *E. coli* strains include: the Achtman 7 gene Multi Locus Sequence Typing (MLST)[@achtman_multilocus_2012;@alikhan_genomic_2018]; Michigan EcMLST [@qi_ecmlst_2004]; whole-genome MLST (<http://www.applied-maths.com/applications/wgmlst>); core-genome MLST [@debeen_core_2015]; two-locus MLST[@weissman_highresolution_2012]; and ribosomal MLST [@jolley_ribosomal_2012]. All of these sequencing-based methods classify *E. coli* with greater accuracy and to higher resolution than Clermont phylotyping. Any practical choice of approach involves trade-offs of cost and complexity against the precision offered by the methodology. The @clermont_clermont_2013 phylotyping scheme remains a popular tool for *E. coli* classification as it can be performed rapidly and inexpensively in a laboratory. In addition, this classification scheme remains useful to make comparisons of newly-sequenced isolates against historical literature, which contains many references to strains classified only by the Clermont scheme.
+Other typing schemes developed to classify *E. coli* strains include: the Achtman 7 gene Multi Locus Sequence Typing (MLST) [@achtman_multilocus_2012;@alikhan_genomic_2018]; Michigan EcMLST [@qi_ecmlst_2004]; whole-genome MLST (<http://www.applied-maths.com/applications/wgmlst>); core-genome MLST [@debeen_core_2015]; two-locus MLST [@weissman_highresolution_2012]; and ribosomal MLST [@jolley_ribosomal_2012]. All of these sequencing-based methods classify *E. coli* with greater accuracy and to higher resolution than Clermont phylotyping. Any practical choice of approach involves trade-offs of cost and complexity against the precision offered by the methodology. The @clermont_clermont_2013 phylotyping scheme remains a popular tool for *E. coli* classification as it can be performed rapidly and inexpensively in a laboratory. In addition, this classification scheme remains useful to make comparisons of newly-sequenced isolates against historical literature, which contains many references to strains classified only by the Clermont scheme.
 
 EzClermont was developed to bridge the gap between the traditional quadruplex primer approach to phylotyping and whole-genome seqenuce data. It provides a simple *in silico* analogue of the Clermont phylotyping approach, applied to genome assemblies. We  implemented EzClermont as both a web application for public use, and as a command-line program for local installation. A similar tool called ClermonTyping was recently published, with similar goals and functionality [@beghain_clermontyping_2018].  Here, we describe our implementation of the Clermont classification scheme in EzClermont, assess its ability to correctly assign Clermont type, relative to *E. coli* whole-phylogeny, and compare its performance to the ClermonTyping program.
 
@@ -43,7 +41,7 @@ EzClermont was developed to bridge the gap between the traditional quadruplex pr
 
 To emulate PCR *in silico*, EzClermont uses regular expressions (regexes) that represent the Clermont primer sequences to locate their potential binding sites on a sequenced genome. The sequence regions lying between these sites are taken to be the predicted amplicons, and can be evaluated for sequence composition, or presence/absence to determine Clermont phylotype.
 
-In practice, PCR primer sequences do not require exact genomic matches to function, so primer-binding sequence variability must be captured in the corresponding regexes. To represent this variability, we selected 1395 *E. coli* genomes from EnteroBase[@zhou_user_2019] (accessed April, 2019). After filtering genomes based on metadata quality and source, one representative of each sequence type [**IS THIS CLERMONT TYPE?**] was selected. The list of 1395 isolates can be found in the EzClermont repository^[`docs/analysis/training/enterobase_training_subset.tab`; a detailed description and script of this filtering  procedure can be found at <https://github.com/nickp60/soil-persistent-ecoli/blob/master/3602-processing-Enterobase-metadata.Rmd>.][**I THINK THE DESCRIPTION SHOULD GO AS SUPP INFO - HANDING OFF TO A 3RD PARTY REPO IS NOT APPROPRIATE FOR THAT IMO; KEEP RELEVANT THINGS TOGETHER FOR THE READER - AND IT'S OK TO NAME THE SCRIPT RATHER THAN PROVIDE THE FULL URI, HERE**]
+In practice, PCR primer sequences do not require exact genomic matches to function, so primer-binding sequence variability must be captured in the corresponding regexes. To represent this variability, we selected 1395 *E. coli* genomes from EnteroBase[@zhou_user_2019] (accessed April, 2019). After filtering genomes based on metadata quality and source, one representative of each Achtman 7-gene multi-locus sequence type was selected. The list of 1395 isolates can be found in the EzClermont repository^[`docs/analysis/training/enterobase_training_subset.tab`; a detailed description and script of this filtering  procedure can be found in the online repository under `docs/analysis/3602-processing-Enterobase-metadata.Rmd`.].
 
 The theoretical amplicons of each of the quadruplex, E-specific, C-specific, G-specific, and E/C control primer sets were identified and aligned. Canonical sequences of the target alleles were identified from NCBI (Table 1). Primer sites were identified and the sequences exctracted from the corresponding genomes, including an additional 5 nucleotides at the 5' and 3' ends.  Homologous sequences were identified in each of the 1395 assemblies using reciprocal BLAST and the simpleOrtho tool ^[<https://github.com/nickp60/simpleOrtho>]. Matching sequence regions were extracted and aligned using Mafft 7.455 [@katoh_mafft_2013], enabling reverse-complement hits with the `--adjustdirection` argument (other arguments were left as defaults). The resulting multiple sequence alignment was used to identify variations at the canonical primer binding sites; these variations were incorporated into the primer sequence, represented as regular expressions (Table 1).  Sequence variations in the last five bases of the primers were not incorporated into the regular expressions, as these 3' variations can be used to differentiate alleles [@stadhouders_effect_2010].
 
@@ -66,9 +64,9 @@ ybgD_R			KATGYDGCYGATKAAGGATC
 trpAgpC_1	trpAgpC	NC_000913.3:c1317222-1316416 	AGTTYTAYGCCSVRWGCGAG
 trpAgpC_2			TCWGYDCYVGTYACGCCC")
 knitr::kable(longtable=FALSE, booktabs=TRUE, linesep = "",
-  #format = "markdown",
-  escape = T, col.names = c("Primer","Target Gene", "Cannonical", "Degenerate"),
-  caption="Primers from Clermont et al. 2013 and Clermont et al. 2019 (*); target amplicons were identified from cannonical gene (or intergenic regions).  Ambiguitites determined by the training procedure were incorporated as degenerate primer sequences using standard IUPAC codes, which are translated into regular expressions by EzClermont.  Variations occuring in the final five bases of the 3' ends of the primers were not incorperated..",
+  format = "latex",
+  escape = T, col.names = c("Primer","Target Gene", "Canonical", "Degenerate Primer"),
+  caption="Primers from Clermont et al. 2013 and Clermont et al. 2019 (*); target amplicons were identified from canonical gene (or intergenic regions).  Ambiguities determined by the training procedure were incorporated as degenerate primer sequences using standard IUPAC codes, which are translated into regular expressions by EzClermont.  Variations occurring in the final five bases of the 3' ends of the primers were not incorporated.",
   primerstab
 ) %>% kable_styling(latex_options = "striped", stripe_index =  c(seq(1,8,2) *2, (seq(1,8,2) *2) - 1))
 
@@ -77,7 +75,7 @@ knitr::kable(longtable=FALSE, booktabs=TRUE, linesep = "",
 
 ### Validation Dataset and Phylogeny Estimation {-}
 
-The accuracy of EzClermont classification was assessed against a set of 125 *E. coli* isolates having both experimentally-determined Clermont phylotypes and available whole-genome sequencing data. The accessions for these 125 strains can be found in Supplementary Materials^[See file `docs/analysis/validate/validation_metadata.csv`. We used Parsnp [@treangen_harvest_2014] to obtain a core genome alignment for the 125 strains, similarly to the approach taken in @clermont_characterization_2019. PhyML [@guindon_new_2010] was used to estimate the phylogeny of these strains using this nucleotide alignment as input and the HKY85 substitution model, obtaining approximate Bayes bootstrapped branch support. The resulting tree was visualised with ggtree [@yu_ggtree_2017], and branches were rotated so that the cryptic *Escherichia* assemblies initiate the tree (Figures \@ref(fig:tree-ez) and \@ref(fig:tree-ez-phy)).
+The accuracy of EzClermont classification was assessed against a set of 125 *E. coli* isolates having both experimentally-determined Clermont phylotypes and available whole-genome sequencing data. The accessions for these 125 strains can be found in Supplementary Materials^[See file `docs/analysis/validate/validation_metadata.csv`]. We used Parsnp [@treangen_harvest_2014] to obtain a core genome alignment for the 125 strains, similarly to the approach taken in @clermont_characterization_2019. PhyML [@guindon_new_2010] was used to estimate the phylogeny of these strains using this nucleotide alignment as input and the HKY85 substitution model, obtaining approximate Bayes bootstrapped branch support. The resulting tree was visualised with ggtree [@yu_ggtree_2017], and branches were rotated so that the cryptic *Escherichia* assemblies initiate the tree (Figures \@ref(fig:tree-ez) and \@ref(fig:tree-ez-phy)).
 
 ### *In silico* Clermont classification {-}
 
@@ -89,25 +87,23 @@ Both EzClermont (version 0.6.2) and ClermonTyping (version 1.4.1) were run with 
 
 ### Implementation {-}
 
-EzClermont is an open-source Python package distributed under the MIT License, available *via* PyPI (<https://pypi.org/project/ezclermont/>), conda, and GitHub (<https://github.com/nickp60/ezclermont>). Biopython is utilized for parsing sequences [@cockBiopythonFreelyAvailable2009]. The package comprises a command-line tool for batch execution, and a Flask-based webapp. The webapp is hosted as a live service at <http://ezclermont.org>, and a Docker container is available at <https://hub.docker.com/r/nickp60/ezclermont> for local deployment.
+EzClermont is an open-source Python package distributed under the MIT License, available *via* PyPI (<https://pypi.org/project/ezclermont/>), conda, and GitHub (<https://github.com/nickp60/ezclermont>). Biopython is utilized for parsing sequences [@cock_biopython_2009]. The package comprises a command-line tool for batch execution and a Flask-based web app. The web app is hosted as a live service at <http://ezclermont.org>, and a Docker container is available at <https://hub.docker.com/r/nickp60/ezclermont> for local deployment.
 
 ### Performance {-}
-
-[**NEEDS PERFORMANCE METHOD DESCRIPTION HERE: COMPUTING SPECS, NUMBER OF RUNS, MEASURING "WALL TIME"**]
-
+Performance of both tools was assessed on a Macbook Pro laptop with 2.7 GHz Intel Core i7 processor with no other applications running apart from a terminal application.  Five runs of the 125-strain validation set were analysed by each, and the elapsed wall time was recorded for each.  Results are shown in Figure \@ref(fig:timingruns).
 
 ## Results {-}
 
 Clermont types reported in the literature are not guaranteed always to correspond to phylogenetic lineage for *E. coli*; *in silico* predictions of phylotype may agree with reported type, lineage, both, or neither. We first therefore established the correspondence between lineage and Clermont type for each isolate in the 125-member validation set and visualised this in Figure \@ref(fig:tree-ez). We found that for seven isolates the lineage was not consistent with the recorded Clermont type (Table 2). In these cases we considered that the phylogenetic lineage was more reliable and took precedence over literature-reported Clermont type, for validating the *in silico* methods.
 
-Figure \@ref(fig:tree-ez) also summarises the resuls of applying both EzClermont and ClermonTyping to the validation dataset. For 123 of 125 isolates, the *in silico* method predictions were consistent with the dominant Clermont type of the phylogenetic lineage. The two mismatched isolates ECOR44 and ECOR49 are, by lineage and literature report, phylogroup D but were mistyped by both EzClermont and ClermonTyping as phylogroups G or E. We examined the source assembly for the ECOR49 isolate and found by reciprocal BLAST search that the canonical arpA fragment that should be present in phylogroup D could not be identified. This would be sufficient to cause misclassification, and suggested that the assembly used for validation might not be complete. We confirmed this by also analysing the alternative ECOR49 assembly GCA_002190975.1; this assembly contains the arpA fragment and both tools assigned this genome correctly to phylogroup D. 
+Figure \@ref(fig:tree-ez) also summarises the results of applying both EzClermont and ClermonTyping to the validation dataset. For 123 of 125 isolates, the *in silico* method predictions were consistent with the dominant Clermont type of the phylogenetic lineage. The two mismatched isolates ECOR44 and ECOR49 are, by lineage and literature report, phylogroup D but were mistyped by both EzClermont and ClermonTyping as phylogroups G or E. We examined the source assembly for the ECOR49 isolate and found by reciprocal BLAST search that the canonical arpA fragment that should be present in phylogroup D could not be identified. This would be sufficient to cause misclassification, and suggested that the assembly used for validation might not be complete. We confirmed this by also analysing the alternative ECOR49 assembly GCA_002190975.1; this assembly contains the arpA fragment and both tools assigned this genome correctly to phylogroup D. 
 <!-- [**A FIGURE SHOWING ALIGNMENT OF THIS REGION OF THE TWO ECOR49 ASSEMBLIES WOULD BE USEFUL IN SUPP INFO**] -->
 
-```{r tree-ez, fig.cap="Cladogram of whole-genome phylogenety for members of the ECOR collection and phylogroup G isolates from Clermont et al. 2019. Clades are background-coloured by dominant phylogroup. The heatmap surrounding the tree shows phylogroups determined from: literature (inner ring), ClermonTyping, and EzClermont (outer ring). The literature phylogroup was not supported by *in silico* analysis for seven strains. Both EzClermont and ClermonTyping agree with the phylogenetic lineage in all but two cases: ECOR44 and ECOR49.", out.width="110%" }
-knitr::include_graphics(path =  "../analysis/cladogram.png")
+```{r tree-ez, fig.cap="Cladogram of whole-genome phylogenety for members of the ECOR collection and phylogroup G isolates from Clermont et al. 2019. Clades are background-coloured by dominant phylogroup. The heatmap surrounding the tree shows phylogroups determined from: literature (inner ring), ClermonTyping, and EzClermont (outer ring). The literature phylogroup was not supported by in silico analysis for seven strains. Both EzClermont and ClermonTyping agree with the phylogenetic lineage in all but two cases: ECOR44 and ECOR49.", out.width="110%" }
+knitr::include_graphics(path =  file.path(builddir, "analysis/cladogram.png"))
 ```
 
-The ECOR44 isolate was mistyped by ClermonTyping as phylogroup E, and by EzClermont as phylogroup G. This was suggestive of a false negative result *in silico* for the arpA primer set. Closer inspection of the region indicated that the arpA fragment was not correctly identified due to a G->A substitution at base 17 of the reverse primer binding site. This mutation occurs in the final 5 bases of the reverse primer, and so was not incorporated during the training process for the primer regular expressions; the same mutation was seen in a further eight of the 1395 training isolates.
+The ECOR44 isolate was mistyped by ClermonTyping as phylogroup E, and by EzClermont as phylogroup G. This was suggestive of a false negative result *in silico* for the arpA primer set. Closer inspection of the region indicated that the arpA fragment was not correctly identified due to a G to A substitution at base 17 of the reverse primer binding site. This mutation occurs in the final 5 bases of the reverse primer, and so was not incorporated during the training process for the primer regular expressions; the same mutation was seen in a further eight of the 1395 training isolates.
 
 ```{r simstab}
 restab <- structure(list(Strain = c("SMS-3-5", "APEC01", "ECOR07", "ECOR72",
@@ -121,41 +117,61 @@ restab <- structure(list(Strain = c("SMS-3-5", "APEC01", "ECOR07", "ECOR72",
 "B2"), Note = c("",
 "", "", "", "", "", "ArpA1_r G17A",
 "", "")), row.names = c(NA, -9L), class = "data.frame")
-knitr::kable(longtable=FALSE, booktabs=TRUE, linesep = "",
-  #format = "markdown",
-  escape = T, col.names = c( "Strain", "Accession",  "Reported",  "Phylogeny", " ClermonTyping", "EzClermont", "Note")  ,
-  caption="Isolates with inconsistent phylogroup predictions. EzClermont and ClermonTyping were run on a set of strains with reported phylotypes. A core SNP tree was constructed, allowing comparison between predicted and reported phylotypes, and the estimated phylogeny. Both tools mistype ECOR49 types as phylogroup G due to a potentially contaminated assembly (*); ECOR49 from assembly GCA_002190975.1 is correctly typed by both tools as phylogroup D.",
+knitr::kable(longtable=FALSE, booktabs=TRUE,  linesep = "",
+  format = "latex",
+  #escape = T,
+  col.names = c("Strain", "Accession",  "Reported",  "Phylogeny", " ClermonTyping", "EzClermont", "Note")  ,
+  caption="Isolates with inconsistent phylogroup predictions. EzClermont and ClermonTyping were run on a set of strains with reported phylotypes. A core SNP tree was constructed, allowing comparison between predicted and reported phylotypes, and the estimated phylogeny. Both tools mistype ECOR49 types as phylogroup G due to a potentially contaminated assembly (*); ECOR49 from assembly GCA002190975.1 is correctly typed by both tools as phylogroup D.",
   restab %>% arrange(Strain)
 ) %>% kable_styling(latex_options = "striped")
 ```
 
-We ran our analyses on the 125 member validation set [**X**] times with both EzClermont and ClermonType [**TABLE OF AVERAGE/RANGE OF TIME TAKEN**]. The mean execution time was [**X**] for EzClermont and [**X**] with ClermonTyping, indicating that there is [**NO COMPELLING EFFICIENCY DIFFERENCE BETWEEN THE TWO IMPLEMENTATIONS?**]
-
+We ran our analyses on the 125 member validation set 5 times with both EzClermont and ClermonType (Figure \@ref(fig:timingruns)). The mean execution time was 1.74s for EzClermont and 1.48s with ClermonTyping.
 
 ## Discussion {-}
 
-EzClermont was built to bridge the gap between established laboratory and whole-genome sequencing methods of classifying *E. coli*. Both EzClermont and ClermonTyping correctly classified 123 of the 125 isolates in our validation set, indicating that they each perform with approximately 98% true positive rate (TPR). Furthermore, a much broader application of EzClermont by @zhou_user_2019 to representative *E. coli* strains in EnteroBase was found to be strongly in agreement with both higher-resolution sequence typing and with ClermonTyping. Although there is [**NO COMPELLING EFFICIENCY DIFFERENCE BETWEEN THE METHODS?**], EzClermont identifies only that isolates are classified as "cryptic", where ClermonTyping distinguishes between cryptic lineages.
+EzClermont was built to bridge the gap between established laboratory and whole-genome sequencing methods of classifying *E. coli*. Both EzClermont and ClermonTyping correctly classified 123 of the 125 isolates in our validation set, indicating that they each perform with approximately 98% true positive rate (TPR). Furthermore, a much broader application of EzClermont by @zhou_user_2019 to representative *E. coli* strains in EnteroBase was found to be strongly in agreement with both higher-resolution sequence typing and with ClermonTyping. EzClermont identifies only that isolates are classified as "cryptic", where ClermonTyping distinguishes between cryptic lineages.
 
 Both tools mistyped the same pair of isolates from the validation set. Incomplete assemblies and misassembled genomes in particular are always likely to give erroneous results with genome sequence-based methods. Input genome quality is therefore critical for accurate classification. The arpA fragment appears to be particularly problematic, and @beghain_clermontyping_2018  noted the difficulty in typing with this region, which has likely been horizontally transfered to some phylogroup D isolates.
 
 However, the disagreement observed in this study between phylogenetic lineage and literature-reported phylotype for seven isolates reinforces that laboratory assays also share potential for error, and that these errors may be propagated in literature and metadata. Our comparison of sequencing efforts for the same isolates in two BioProjects implies that, at least in these two collections, the phylogenetic identities of 12 of the 72 strains were not certain (Supplementary Figure \@ref(fig:bioproject-comparison)). Such issues may lead to groups referring to distinct strains by the same name. We found that application of the *in silico* tools was able to correct misassigned phylotype for seven isolates.
 
-EzClermont is implemented as an aplication and as a Python package, and works with STDIN/STOUT for developers to integrate into unix pipelines. It is also presented as a web appplication with an intuitive interface for simple queries. We hope that the incorporation of EzClermont into EnteroBase [@zhou_user_2019], and the utility of applying the local program to large batches of genomes, mean that it will be of continued use to the scientific community.
+EzClermont is implemented as an application and as a Python package, and works with STDIN/STOUT for developers to integrate into unix pipelines. It is also presented as a web application with an intuitive interface for simple queries. We hope that the incorporation of EzClermont into EnteroBase [@zhou_user_2019], and the utility of applying the local program to large batches of genomes, mean that it will be of continued use to the scientific community.
 
 
-## Supplementary Figures {-}
+\newpage
+## Author Contributions {-}
+Author contributions according to the CRediT taxonomy [@allen_how_2019] are listed alphabetically as follows:
+Conceptualization: NW ; Methodology: FA, LP, NW; Software and Data Curation: NW; Validation: LP, NW; Formal analysis: NW; Investigation: NW; Resources; FA, FB, LP; Writing - Original Draft:  NW; Writing - Review & Editing: FA, FB, AH, LP, NW; Visualization: NW; Supervision: FA, FB, AH, LP; Project administration	FA, FB, LP; Funding acquisition: FA, FB, AH, LP.
+
+## Acknowledgements {-}
+The authors thank the reviewers for their valuable feedback.
+
+## Competing interests {-}
+The authors declare that they have no competing interests.
+
+## Funding {-}
+The work was funded through a joint studentship between The James Hutton Institute, Dundee, Scotland, and the National University of Ireland, Galway, Ireland.
+
+## Acknowledgements {-}
+Many thanks to Stephen Nolan, Dr. Corine Nzeteu, Dr. Alma Siggins, and to the reviewers for their helpful  comments on the manuscript.
+
+\newpage
+## Supplementary Information {-}
 \renewcommand\thefigure{S\arabic{figure}}
 \setcounter{figure}{0}
 
 ### Generating core-genome alignments
-Core genome alignmets were generated with Parsnp (version 1.1.2) from a curated directory of genome assemblies, selecting a random reference, run with 4 threads, as follows:  
-```
-[parsnp -c -d ./genome_assemblies_genome_fasta/tmp/ -r !  -p 4 -o ./alignment/
+Core genome alignments were generated with Parsnp (version 1.1.2) from a curated directory of genome assemblies, selecting a random reference, run with 4 threads, as follows:  
+
+```{bash, echo=TRUE, eval=FALSE}
+parsnp -c -d ./genome_assemblies_genome_fasta/tmp/ -r !  -p 4 -o ./alignment/
 harvesttools  -i ./alignment/parsnp.ggr -M  ./alignment/parsnp.msa
 ```
-Harvesttols was used to convert the resulting core genome alignment into a .MSA file, which was converted into a PHYLIP alignment with biopython as follows:
 
-```
+Harvestools was used to convert the resulting core genome alignment into a .MSA file, which was converted into a PHYLIP alignment with biopython as follows:
+
+```{bash, echo=TRUE, eval=FALSE}
 # names were truncated to retain only the unique identifier
 cat alignment/parsnp.msa | sed -e 's/^>\(.\{4\}\)\(.\{9\}\).*/>\2/'  > alignment/parsnp.clean.msa
 # from open_utils commit 65129b2
@@ -164,7 +180,7 @@ frommsa.py ./docs/analysis/validate/alignment/parsnp.clean.msa  > ./docs/analysi
 
 Phyml (version 3.3.20190909)  was run as follows, using the default parameters for nucleotide alignments.
 
-```
+```{bash, echo=TRUE, eval=FALSE}
 # version 3.3.20190909
 phyml -i ./alignment/parsnp.clean.phy
 ```
@@ -172,14 +188,60 @@ phyml -i ./alignment/parsnp.clean.phy
 ### Phylogenetic analysis of the ECOR collection sequencing efforts
 
 
-```{r bioproject-comparison, fig.cap="A core-genome alignment of the assemblies from both ECOR collection sequencing projects was created with Parsnp.  The tip shapes indicate the sequencing project. (A) shows the core genome phylogeny, and (B) shows the same but with equal branch lengths to easier visualize closely-related strains. Yellow tips indicate strains for which the two BioProject's assemblies contradict.", out.width="110%" }
-knitr::include_graphics(path =  "../analysis/bioproject_comparison.png")
+```{r bioproject-comparison, fig.cap="A core-genome alignment of the assemblies from both ECOR collection sequencing projects was created with Parsnp.  The tip shapes indicate the sequencing project. (A) shows the core genome phylogeny, and (B) shows the same but with equal branch lengths to more easily visualize closely-related strains. Yellow tips indicate strains for which the two BioProject's assemblies contradict.", out.width="110%" }
+knitr::include_graphics(path =  file.path(builddir, "analysis/bioproject_comparison.png"))
 ```
 
 
 ```{r tree-ez-phy, fig.cap="Maximum likelihood tree of core genome alignment showing the relationship of the isolates to their literature-reported and predicted phylotypes.  The cryptic clade isolates were omitted for clarity, and the tree was rerooted at the point where they diverged.", out.width="110%" }
-knitr::include_graphics(path =  "../analysis/tree.png")
+knitr::include_graphics(path =  file.path(builddir, "analysis/tree.png"))
 ```
 
+### Timing
 
+```{r timingruns, fig.cap="Timing was assessed by running each tool on the 125 validation strains 5 times, for a total of 625 runs. ClermonTyping has a slight time advantage compared to EzClermont.", out.width="60%" }
+library(tidyverse)
+library(lubridate)
+mytheme <- function(base_font_size =  10){
+  #  the font size can be set in a c all so margin plots have larger text
+  ggplot2::theme_minimal() %+replace% ggplot2::theme(
+    plot.caption = ggplot2::element_text(hjust=0, color = "grey20"),
+    rect = ggplot2::element_rect(fill = "transparent", color=NA, size=1, linetype = 0),
+    #plot.background = ggplot2::element_rect(fill = "#FAFAFA", color=NA),
+    plot.background = ggplot2::element_rect(fill = "transparent", color="transparent"),
+    axis.text = ggplot2::element_text(size=base_font_size),
+    axis.title  = ggplot2::element_text(size=base_font_size *1.3),
+    strip.text = ggplot2::element_text(size=.75*base_font_size),
+    panel.grid.minor.x = ggplot2::element_blank(),
+    title = ggplot2::element_text(size=base_font_size*1.5),
+    legend.text =  ggplot2::element_text(size=base_font_size), 
+    plot.subtitle = ggplot2::element_text(size=base_font_size, colour = "grey60")
+  )
+}
+
+timingdf <- rbind(
+  read.table(file.path(builddir, "analysis/timing/clermonTyping"), stringsAsFactors = F, header=F) %>% 
+    mutate(set="ClermonTyping"),
+  read.table(file.path(builddir,"analysis/timing/ezclermont"), stringsAsFactors = F, header=F) %>% 
+    mutate(set="EzClermont"))  %>% filter(grepl("real", V1))
+timingdf$seconds <-  as.numeric(as.period(ms(timingdf$V2), unit = "sec"))
+
+ggsave(file.path(builddir, "analysis/timing.png"), width = 5, height = 5,
+       ggplot(timingdf, aes(x=set, y=seconds, color=set)) + 
+         geom_boxplot(outlier.color = NA, color="black") +
+         geom_jitter( alpha=.4)  + mytheme() + 
+         scale_color_manual(values = wesanderson::wes_palette("Darjeeling1"), guide="none") +
+         labs(x="Tool", y="Seconds")
+)
+
+
+knitr::include_graphics(path =  file.path(builddir, "analysis/timing.png"))
+```
+
+```{r, eval=FALSE}
+timingdf %>% group_by(set) %>% summarize(Average=mean(seconds),
+                                         Median=median(seconds))
+```
+
+\newpage
 ## References {-}
