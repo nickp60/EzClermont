@@ -35,7 +35,12 @@ if sys.version_info <= (3, 0):
 ## parse requirements file
 install_reqs = parse_requirements("requirements.txt",
                                   session=False)
-requirements = [str(ir.req) for ir in install_reqs]
+
+
+try:
+    requirements = [str(ir.req) for ir in install_reqs]
+except AttributeError:
+    requirements = [str(ir.requirement) for ir in install_reqs]
 
 setup(
     name='ezclermont',

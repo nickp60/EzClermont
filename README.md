@@ -84,12 +84,17 @@ Have fun!
 
 
 ## Installation
+From Conda:
+
 ```
-conda create -n ez biopython
-conda activate ezclermont
-pip install ezclermont
+conda create -n ezclermont_env ezclermont
+conda activate ezclermont_env
 ```
 
+From Pypi:
+```
+pip install ezclermont
+```
 
 
 ### Testing
