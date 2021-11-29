@@ -563,6 +563,10 @@ def main(args=None):
             expname,
             Clermont_type
         ))
+    # We opened this earlier.
+    # Maybe this should be in a try/except to close during errors too?
+    if args.logfile:
+        sys.stderr.close()
     return(Clermont_type, profile)
 
 
