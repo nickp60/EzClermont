@@ -87,10 +87,19 @@ Have fun!
 
 
 ## Installation
+### From Pypi
 ```
 conda create -n ez biopython
 conda activate ezclermont
 pip install ezclermont
+```
+
+### development
+```
+conda create -n ez biopython
+conda activate ezclermont
+git clone https://github.com/nickp60/ezclermont && cd ezclermont
+pip install .
 ```
 
 

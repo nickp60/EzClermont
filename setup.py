@@ -33,9 +33,13 @@ if sys.version_info <= (3, 0):
     sys.exit(1)
 
 ## parse requirements file
-install_reqs = parse_requirements("requirements.txt",
-                                  session=False)
-requirements = [str(ir.req) for ir in install_reqs]
+install_reqs = list(parse_requirements("requirements.txt",
+                                       session=False))
+
+try:
+    requirements = [str(ir.req) for ir in install_reqs]
+except:
+    requirements = [str(ir.requirement) for ir in install_reqs]
 
 setup(
     name='ezclermont',
