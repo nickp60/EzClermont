@@ -75,7 +75,7 @@ def process_barcode(args, barcode, outfile):
             print(response.status_code)
             if response.status_code != 200:
                 manif.write("%s\t%s\t%s\n" % (barcode, "UNKNOWN", "FAIL"))
-                logging.error('%d %s' %(response.status_code, Response.text))
+                logging.error('%d %s' %(response.status_code, response.text))
                 return 1
             data = response.json()
             if args.verbose:

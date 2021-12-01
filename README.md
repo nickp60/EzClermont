@@ -89,9 +89,8 @@ Have fun!
 ## Installation
 ### From Pypi
 ```
-conda create -n ez biopython
-conda activate ezclermont
-pip install ezclermont
+conda create -n ezclermont_env ezclermont
+conda activate ezclermont_env
 ```
 
 ### development
