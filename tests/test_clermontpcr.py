@@ -145,6 +145,7 @@ class clermontTestCase(unittest.TestCase):
                                      "refs", ref[1] + ".fasta"),
                 experiment_name=None,
                 no_partial=False,
+                logfile=None,
                 min_length=500)
             result, profile = clp.main(args)
             self.assertEqual(
@@ -170,6 +171,7 @@ class clermontTestCase(unittest.TestCase):
                 contigs=os.path.join(os.path.dirname(__file__),
                                      "refs","big6", ref[1] + ".fasta"),
                 experiment_name=None,
+                logfile=None,
                 no_partial=False,
                 min_length=500)
             result, profile = clp.main(args)
@@ -182,6 +184,7 @@ class clermontTestCase(unittest.TestCase):
             contigs=os.path.join(os.path.dirname(__file__),
                                  "refs", Crypt_ref[1] + ".fasta"),
             experiment_name=None,
+            logfile=None,
             no_partial=False,
             min_length=500)
         result, profile  = clp.main(args)

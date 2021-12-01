@@ -102,8 +102,10 @@ def get_args():  # pragma: no cover
                           "behaviour is to consider partial hits if the " +
                           "assembly has more than 4 sequnces" +
                           "(ie, no partial matches for complete genomes, " +
-                          "allowing for 1 chromasome and several plasmids)",
+                          "allowing for 1 chromosome and several plasmids)",
                           default=False)
+    optional.add_argument("--logfile", dest='logfile',
+                          help="send log messages to logfile instead stderr")
     optional.add_argument("-h", "--help",
                           action="help", default=argparse.SUPPRESS,
                           help="Displays this help message")
@@ -409,9 +411,12 @@ def ambig_to_regex(primer):
 
 
 def main(args=None):
-    verbose = False
     if args is None:
         args = get_args()
+    verbose = False
+    if args.logfile:
+        verbose = True
+        sys.stderr = open(args.logfile, "w")
     ####### Quadriplex PCR ########
     # chuA
     chuA_1b = ambig_to_regex("ATGGTACYGGRCGAACCAAC") #
@@ -558,6 +563,10 @@ def main(args=None):
             expname,
             Clermont_type
         ))
+    # We opened this earlier.
+    # Maybe this should be in a try/except to close during errors too?
+    if args.logfile:
+        sys.stderr.close()
     return(Clermont_type, profile)
 
 
