@@ -410,7 +410,7 @@ def ambig_to_regex(primer):
     return("".join(new_primer))
 
 
-def main(args=None):
+def something_else(args=None):
     if args is None:
         args = get_args()
     verbose = False
@@ -575,10 +575,10 @@ def cli_main():
     All the logging info is on stderr already
     """
     args = get_args()
-    cler_type, cler_profile = main(args)
+    cler_type, cler_profile = something_else(args)
     sys.exit(0)
 
 
 if __name__ == "__main__":
     args = get_args()
-    cler_type, cler_profile = main(args)
+    cler_type, cler_profile = something_else(args)
