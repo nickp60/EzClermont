@@ -6,8 +6,8 @@ import tempfile
 from argparse import Namespace
 from Bio import SeqIO
 
-from ezclermont import run as clermontpcr
-from ezclermont import _version
+from src.ezclermont import run as clermontpcr
+from src.ezclermont import _version
 # check that the import works
 print("Running ezclermont version", _version.__version__)
 
@@ -99,7 +99,7 @@ def runcler(contigsfile):
     # prepare args
     args = Namespace(contigs=contigsfile,
                      experiment_name=None,
-                     no_partial=False, min_length=500)
+                     no_partial=False, min_length=500, logfile=None)
     try:
         results, profile  = clermontpcr.main(args)
     except Exception as e:

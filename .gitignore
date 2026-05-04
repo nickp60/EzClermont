@@ -107,3 +107,7 @@ ENV/
 *.blg
 *.out
 docs/analysis/validate/ct_res/analysis_*
+.Rproj.user
+# pixi environments
+.pixi/*
+!.pixi/config.toml
