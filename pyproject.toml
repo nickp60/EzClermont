@@ -14,7 +14,7 @@ authors = [
 keywords = ["bioinformatics", "evolution", "genomics", "development"]
 requires-python = ">=3.5"
 classifiers = [
-    "Development Status :: 3 - Beta;5u51;126;27M;5u51;110;31M51;106;31M51;103;32M",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
