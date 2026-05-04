@@ -6,8 +6,8 @@ import tempfile
 from argparse import Namespace
 from Bio import SeqIO
 
-from cpcr import run as clermontpcr
-from cpcr import _version
+from ezclermont import run as clermontpcr
+from ezclermont import _version
 # check that the import works
 print("Running ezclermont version", _version.__version__)
 

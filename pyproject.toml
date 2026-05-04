@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ezclermont"
+dynamic = ["version"]
+description = "ezclermont: phylotype your E. coli strains, in silico"
+readme = "README.md"
+license = "MIT"
+authors = [
+    { name = "Nick Waters", email = "nickp60@gmail.com" }
+]
+keywords = ["bioinformatics", "evolution", "genomics", "development"]
+requires-python = ">=3.5"
+classifiers = [
+    "Development Status :: 3 - Beta;5u51;126;27M;5u51;110;31M51;106;31M51;103;32M",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3 :: Only",
+]
+dependencies = [
+    "biopython",
+]
+
+[project.optional-dependencies]
+dev = [
+    "coverage",
+]
+
+[project.urls]
+Homepage = "https://github.com/nickp60/EzClermont"
+
+[project.scripts]
+ezclermont = "src.ezclermont.run:cli_main"
+
+[tool.setuptools.dynamic]
+version = { attr = "src.ezclermont._version.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.setuptools.package-data]
+"*" = ["tests/refs/*"]

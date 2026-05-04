@@ -10,6 +10,7 @@
 This is a tool for using the Clermont 2013 PCR typing method for *in silico* analysis of *E. coli* whole genomes or assembled contigs.
 
 ### Changelog
+ - bump to version 1.0 in May 2026; modernize install, tests, imports
  - bump to version 0.7 in Nov 2021; add option for logfile instead of stderr messages for workflow compatibility
  - bump to version 0.4 in May 2018; improved handling of partial matches
  - made a webapp on April 19th, 2018 after requests from several to make the tool more user friendly.
@@ -37,7 +38,7 @@ usage: ezclermont [-m MIN_LENGTH] [-e EXPERIMENT_NAME] [-n]
                   [--logfile LOGFILE] [-h] [--version]
                   contigs
 
-run a 'PCR' to get Clermont 2013 phylotypes; version 0.7.0
+run a 'PCR' to get Clermont 2013 phylotypes; version 1.0.0
 
 positional arguments:
   contigs               FASTA formatted genome or set of contigs. If reading
@@ -94,17 +95,22 @@ conda activate ezclermont_env
 ```
 
 ### development
+
 ```
 conda create -n ez biopython
 conda activate ezclermont
 git clone https://github.com/nickp60/ezclermont && cd ezclermont
-pip install .
+pip install --editable .
 ```
 
 
 
 ### Testing
-The tests can be run by either unittests or nosetests.
+
+```
+pytest
+```
+
 
 ### Requirements
 #### commandline tool
