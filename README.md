@@ -31,6 +31,11 @@ or
 cat tests/refs/CP004009.1.fasta | ezclermont - -e "APEC_O78"
 ```
 
+or from docker:
+
+```
+docker run  -v $PWD:$PWD --entrypoint python nickp60/ezclermont  /usr/local/bin/ezclermont $PWD/tests/refs/AE005174.2.fasta
+```
 
 
 ```
@@ -124,4 +129,4 @@ biopython
 Thanks to [Dave Gamache]( https://github.com/dhg/Skeleton) for Skeleton, the webapp CSS theme.
 
 ## Name note
-The name of this repo (and pypi package was changed on April 21 from ClermontPCR to EzClermont.
+The name of this repo (and pypi package) was changed on April 21 from ClermontPCR to EzClermont.
